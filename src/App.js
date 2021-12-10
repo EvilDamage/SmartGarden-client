@@ -8,8 +8,9 @@ import {
 import Login from "./pages/Login";
 import Home from "./pages/Home";
 import NoMatch from "./pages/NoMatch";
-
-const authContext = createContext();
+import {ApolloProvider, ApolloClient, createHttpLink, InMemoryCache, useApolloClient} from "@apollo/client";
+import {setContext} from "@apollo/client/link/context";
+import {isAuthenticated} from "./helpers/config";
 
 function App() {
     return (
@@ -30,22 +31,42 @@ function App() {
 }
 
 function ProvideAuth({children}) {
-    //TODO: add auth
-    const auth = {user: false};
+    const link = createHttpLink({
+        uri: 'http://localhost:4000/graphql',
+    });
+
+    const authLink = setContext((_, { headers }) => {
+        const token = localStorage.getItem('access_token');
+        return {
+            headers: {
+                ...headers,
+                Authorization: token ? `Bearer ${token}` : "",
+            }
+        }
+    });
+
+    const client = new ApolloClient({
+        link: authLink.concat(link),
+        cache: new InMemoryCache()
+    });
+
     return (
-        <authContext.Provider value={auth}>
+        <ApolloProvider client={client}>
             {children}
-        </authContext.Provider>
+        </ApolloProvider>
     );
 }
 
 function PrivateRoute({children, ...rest}) {
-    let auth = useContext(authContext);
+    const client = useApolloClient();
+
+    console.log(client)
+
     return (
         <Route
             {...rest}
             render={({location}) =>
-                auth.user ? (
+                client ? (
                     children
                 ) : (
                     <Redirect
