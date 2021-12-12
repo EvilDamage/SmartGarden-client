@@ -11,6 +11,7 @@ import NoMatch from "./pages/NoMatch";
 import {ApolloProvider, ApolloClient, createHttpLink, InMemoryCache, useApolloClient} from "@apollo/client";
 import {setContext} from "@apollo/client/link/context";
 import {isAuthenticated} from "./helpers/config";
+import Register from "./pages/Register";
 
 function App() {
     return (
@@ -19,6 +20,9 @@ function App() {
                 <Switch>
                     <Route path="/login">
                         <Login/>
+                    </Route>
+                    <Route path="/register">
+                        <Register/>
                     </Route>
                     <PrivateRoute exact path="/">
                         <Home/>

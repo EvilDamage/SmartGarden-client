@@ -7,7 +7,7 @@ const Home = () => {
 
     const { data, loading, error } = useQuery(SENSOR_READS);
 
-    console.log(data)
+    console.log(data, error)
 
     return(
         <div>

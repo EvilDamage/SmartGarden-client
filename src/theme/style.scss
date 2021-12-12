@@ -1,1 +1,64 @@
 @import '~bootstrap/scss/bootstrap.scss';
+
+$primary-color: #064635;
+$secondary-color: #519259;
+
+:root{
+  .btn-primary {
+    @include button-variant($primary-color, darken($primary-color, 7.5%), darken($primary-color, 10%), lighten($primary-color,5%), lighten($primary-color, 10%), darken($primary-color,30%));
+    color: #ffffff !important;
+    border-color: $primary-color ;
+  }
+}
+
+#login, #register {
+  .row .col-md-7,.row .col-md-5  {
+    height: 100vh;
+  }
+
+  .carousel-side {
+    background-image: url("../assets/images/login-bg.svg");
+    background-position: 50% 50%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-color: $secondary-color;
+  }
+
+  .login-side {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: -4rem;
+
+    .password-reminder{
+      color: $secondary-color;
+      text-decoration: none;
+      font-weight: bolder;
+    }
+
+
+  }
+}
+
+// Overwritten
+
+input[type=text], input[type=password], input[type=email] {
+  min-height: 48px;
+  margin-bottom: 0px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  padding-left: 24px;
+  border: 1px solid #e1dfec;
+  border-radius: 500px;
+  background-color: #fff;
+  color: #8c87a6;
+  letter-spacing: -0.02em;
+}
+
+button {
+  width: 100%;
+  min-height: 48px;
+  margin-top: 32px;
+  padding: 12px 32px;
+  border-radius: 500px !important;
+}
