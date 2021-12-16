@@ -1,17 +1,19 @@
 import React, {useState} from "react";
 import {useMutation} from "@apollo/client";
-import {LOGIN_USER} from "../helpers/gqlQueries";
+import {LOGIN_USER, REGISTER_USER} from "../helpers/gqlQueries";
 import {useHistory} from "react-router-dom";
 import {Modal} from 'react-bootstrap';
+import {onError} from "@apollo/client/link/error";
 
 const Register = () => {
     const history = useHistory();
 
+    const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [modalVisibility, setModalVisibility] = useState(false)
 
-    const [client, {data, loading, error}] = useMutation(LOGIN_USER);
+    const [register, {data, loading, error}] = useMutation(REGISTER_USER);
 
     return (
         <div className="container-fluid" id={"register"}>
@@ -27,29 +29,41 @@ const Register = () => {
                             <strong>Uwaga!</strong> Nie udało się zarejestrować
                         </div>
                         }
-                        <label className="form-label">Imię</label>
-                        <input type="email" className="form-control" placeholder="Jan"
-                               onChange={(e) => setEmail(e.target.value)}/>
-                        <label className="form-label mt-2">Adres Email</label>
-                        <input type="email" className="form-control" placeholder="mail@website.com"
-                               onChange={(e) => setEmail(e.target.value)}/>
-                        <label className="form-label mt-2">Hasło</label>
-                        <input type="password" className="form-control" placeholder="Min. 8 znaków"
-                               onChange={(e) => setPassword(e.target.value)}/>
-                        <button type="button" className="btn btn-primary"
-                                onClick={() => client({variables: {email: email, password: password}}).then((res) => {
-                                    if (res.data.login) {
-                                        localStorage.setItem('access_token', res.data.login.access_token);
-                                        localStorage.setItem('refresh_token', res.data.login.refresh_token);
-                                        history.push('/')
-                                    }
-                                })}>
-                            {!loading ? 'Zarejestruj' :
-                                <div className="spinner-border spinner-border-sm" role="status">
-                                    <span className="visually-hidden">Loading...</span>
-                                </div>
-                            }
-                        </button>
+                        <form>
+                            <label className="form-label">Imię</label>
+                            <input type="text" className="form-control" placeholder="Jan"
+                                   onChange={(e) => setName(e.target.value)}/>
+                            <label className="form-label mt-2">Adres Email</label>
+                            <input type="email" className="form-control" placeholder="mail@website.com"
+                                   onChange={(e) => setEmail(e.target.value)}/>
+                            <label className="form-label mt-2">Hasło</label>
+                            <input type="password" className="form-control" placeholder="Min. 8 znaków"
+                                   onChange={(e) => setPassword(e.target.value)}/>
+                            <button type="button" className="btn btn-primary"
+                                    onClick={() => {
+                                        if (name !== '' && email !== '' && password !== '') {
+                                            register({
+                                                variables: {
+                                                    name: name,
+                                                    email: email,
+                                                    password: password
+                                                }
+                                            }).then((res) => {
+                                                if (res.data.register) {
+                                                    history.push('/login', {registerSuccess: true})
+                                                }
+                                            }).catch((e) => {
+                                                console.err(e)
+                                            })
+                                        }
+                                    }}>
+                                {!loading ? 'Zarejestruj' :
+                                    <div className="spinner-border spinner-border-sm" role="status">
+                                        <span className="visually-hidden">Loading...</span>
+                                    </div>
+                                }
+                            </button>
+                        </form>
                     </div>
                 </div>
                 <div className="col-md-5 carousel-side"/>

@@ -15,6 +15,12 @@ mutation Mutation($email: String!, $password: String!) {
 }
 `
 
+export const RESET_PASSWORD = gql`
+mutation Mutation($email: String!) {
+  resetPassword(email: $email)
+}
+`
+
 export const EDIT_USER = gql`
 mutation Mutation($email: String!, $password: String!, $name: String!) {
   editUser(email: $email, password: $password, name: $name){

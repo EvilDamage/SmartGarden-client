@@ -6,7 +6,7 @@ import {
     Redirect, useHistory
 } from "react-router-dom";
 import Login from "./pages/Login";
-import Home from "./pages/Home";
+import Dashboard from "./pages/Dashboard";
 import NoMatch from "./pages/NoMatch";
 import {ApolloProvider, ApolloClient, createHttpLink, InMemoryCache, useApolloClient} from "@apollo/client";
 import {setContext} from "@apollo/client/link/context";
@@ -25,7 +25,7 @@ function App() {
                         <Register/>
                     </Route>
                     <PrivateRoute exact path="/">
-                        <Home/>
+                        <Dashboard/>
                     </PrivateRoute>
                     <Route component={NoMatch} />
                 </Switch>
