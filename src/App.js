@@ -6,12 +6,17 @@ import {
     Redirect, useHistory
 } from "react-router-dom";
 import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
+import ContentWrapper from "./components/ContentWrapper";
 import NoMatch from "./pages/NoMatch";
 import {ApolloProvider, ApolloClient, createHttpLink, InMemoryCache, useApolloClient} from "@apollo/client";
 import {setContext} from "@apollo/client/link/context";
 import {isAuthenticated} from "./helpers/config";
 import Register from "./pages/Register";
+import Stats from "./pages/Stats";
+import Settings from "./pages/Settings";
+import User from "./pages/User";
+import Home from "./pages/Home";
+import Plans from "./pages/Plans";
 
 function App() {
     return (
@@ -25,7 +30,19 @@ function App() {
                         <Register/>
                     </Route>
                     <PrivateRoute exact path="/">
-                        <Dashboard/>
+                        <ContentWrapper><Home/></ContentWrapper>
+                    </PrivateRoute>
+                    <PrivateRoute exact path="/plans">
+                        <ContentWrapper><Plans/></ContentWrapper>
+                    </PrivateRoute>
+                    <PrivateRoute exact path="/stats">
+                        <ContentWrapper><Stats/></ContentWrapper>
+                    </PrivateRoute>
+                    <PrivateRoute exact path="/settings">
+                        <ContentWrapper><Settings/></ContentWrapper>
+                    </PrivateRoute>
+                    <PrivateRoute exact path="/users">
+                        <ContentWrapper><User/></ContentWrapper>
                     </PrivateRoute>
                     <Route component={NoMatch} />
                 </Switch>
@@ -36,7 +53,7 @@ function App() {
 
 function ProvideAuth({children}) {
     const link = createHttpLink({
-        uri: 'http://localhost:4000/graphql',
+        uri: 'http://192.168.0.190:4000/graphql',
     });
 
     const authLink = setContext((_, { headers }) => {
@@ -51,7 +68,7 @@ function ProvideAuth({children}) {
 
     const client = new ApolloClient({
         link: authLink.concat(link),
-        cache: new InMemoryCache()
+        cache: new InMemoryCache(),
     });
 
     return (
@@ -64,7 +81,7 @@ function ProvideAuth({children}) {
 function PrivateRoute({children, ...rest}) {
     const client = useApolloClient();
 
-    console.log(client)
+    // console.log(client)
 
     return (
         <Route

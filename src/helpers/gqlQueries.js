@@ -21,6 +21,19 @@ mutation Mutation($email: String!) {
 }
 `
 
+export const GET_USERS = gql`
+query Query {
+  users{
+    id
+    email
+    name
+    confirmed
+    created_at
+    updated_at
+  }
+}
+`
+
 export const EDIT_USER = gql`
 mutation Mutation($email: String!, $password: String!, $name: String!) {
   editUser(email: $email, password: $password, name: $name){
@@ -28,6 +41,18 @@ mutation Mutation($email: String!, $password: String!, $name: String!) {
       name
       email
   }
+}
+`
+
+export const ADD_USER = gql`
+mutation Mutation($email: String!, $name: String!) {
+  addUser(email: $email, name: $name)
+}
+`
+
+export const DELETE_USER = gql`
+mutation Mutation($id: ObjectID) {
+  deleteUser(id: $id)
 }
 `
 
@@ -42,6 +67,35 @@ query Query {
     light_level
     cpu_temperature
     created_at
+  }
+}
+`
+
+export const CURRENT_SENSOR_READS = gql`
+query Query {
+      currentSensorsReading {
+    air_humidity
+    soil_humidity
+    air_temperature
+    air_pressure
+    light_level
+    cpu_temperature
+    created_at
+  }
+}
+`
+
+export const GET_SETTINGS = gql`
+query Query {
+  settings {
+    mode
+    interval
+    pump
+    pump_fertilizer
+    light
+    fan
+    created_at
+    updated_at
   }
 }
 `

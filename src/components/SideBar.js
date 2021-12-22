@@ -6,7 +6,7 @@ import {RiPlantLine} from 'react-icons/ri'
 
 const SideBar = () => {
 
-
+    const pathName = window.location.pathname
 
     return (
         <div id={'sidebar'} className={''}>
@@ -14,11 +14,11 @@ const SideBar = () => {
                 SG
             </div>
             <div className={'sidebar-nav'}>
-                <a href={'#'} className={'active'}><MdOutlineSpaceDashboard/></a>
-                <a href={'#'}><RiPlantLine/></a>
-                <a href={'#'}><AiOutlineBarChart/></a>
-                <a href={'#'}><IoSettingsOutline/></a>
-                <span className={'logout'}><AiOutlinePoweroff/></span>
+                <a href={'/'} className={pathName === '/' && 'active'}><MdOutlineSpaceDashboard/></a>
+                <a href={'/plans'} className={pathName === '/plans' && 'active'}><RiPlantLine/></a>
+                <a href={'/stats'} className={pathName === '/stats' && 'active'}><AiOutlineBarChart/></a>
+                <a href={'/settings'} className={pathName === '/settings' && 'active'}><IoSettingsOutline/></a>
+                {/*<span className={'logout'}><AiOutlinePoweroff/></span>*/}
             </div>
         </div>
     )
