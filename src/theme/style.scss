@@ -202,6 +202,22 @@ $secondary: #519259;
 
 }
 
+#user-panel{
+  .list-item{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .btn-remove{
+    width: 32px !important;
+    min-height: 32px !important;
+    border-radius: 10px !important;
+    margin: 0;
+    padding: 0;
+  }
+}
+
 #banner {
   margin-top: -1px;
   height: 5rem;

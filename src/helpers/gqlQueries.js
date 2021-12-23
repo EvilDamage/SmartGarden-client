@@ -51,7 +51,7 @@ mutation Mutation($email: String!, $name: String!) {
 `
 
 export const DELETE_USER = gql`
-mutation Mutation($id: ObjectID) {
+mutation Mutation($id: ID!) {
   deleteUser(id: $id)
 }
 `
