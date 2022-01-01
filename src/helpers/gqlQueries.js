@@ -58,7 +58,7 @@ mutation Mutation($id: ID!) {
 
 export const SENSOR_READS = gql`
 query Query {
-  sensorReads {
+  sensorReads{
     id
     air_humidity
     soil_humidity
@@ -85,9 +85,10 @@ query Query {
 }
 `
 
-export const GET_SETTINGS = gql`
-query Query {
-  settings {
+export const UPDATE_SETTINGS = gql`
+mutation Mutation ($mode: String, $interval: Int, $pump: Boolean, $pump_fertilizer: Boolean, $light: Boolean, $fan: Boolean){
+  updateSettings (mode: $mode, interval: $interval, pump: $pump, pump_fertilizer: $pump_fertilizer, light: $light, fan: $fan){
+    id
     mode
     interval
     pump
@@ -97,5 +98,71 @@ query Query {
     created_at
     updated_at
   }
+}
+`
+
+export const GET_SETTINGS = gql`
+query Query {
+  settings {
+    mode
+    interval
+    current_plan
+    pump
+    pump_fertilizer
+    light
+    fan
+    created_at
+    updated_at
+  }
+}
+`
+
+export const GET_PLANS = gql`
+query Query {
+  profiles {
+    id
+    name
+    schedule{
+        id
+        air_humidity
+        soil_humidity
+        air_temperature
+        light{
+            start_hour
+            end_hour
+            minimumLevel
+        }
+        duration
+    }
+    created_at
+    updated_at
+  }
+}
+`
+
+export const ADD_PLANS = gql`
+mutation Mutation ($name: String!, $schedule: [ScheduleInput!]!){
+  addProfile (name: $name, schedule: $schedule){
+    name
+    schedule{
+        air_humidity
+        soil_humidity
+        air_temperature
+        light {
+            start_hour
+            end_hour
+            minimumLevel
+        }
+        duration
+    }
+    created_at
+    updated_at
+  }
+}
+`
+
+export const DELETE_PLAN = gql`
+mutation Mutation($id: ID!) {
+  deleteProfile(id: $id)
 }
 `

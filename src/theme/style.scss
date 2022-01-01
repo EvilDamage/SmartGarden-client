@@ -44,6 +44,33 @@ $secondary: #519259;
   }
 }
 
+#plans {
+  .title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .button-title {
+    border-radius: 0 !important;
+    margin-top: 0 !important;
+  }
+
+  .button-wrapper{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    button{
+      width: 15em;
+    }
+  }
+
+  .add-plan-button {
+
+  }
+}
+
 // Components
 
 #navbar {
@@ -138,13 +165,13 @@ $secondary: #519259;
 }
 
 #home {
-  .title{
+  .title {
     display: flex;
     justify-content: space-between;
     align-items: center;
   }
 
-  .refeach{
+  .refeach {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -161,24 +188,27 @@ $secondary: #519259;
     color: #ffffff;
   }
 
-  .refeach:hover{
+  .refeach:hover {
     background: #053c2d;
     transition: background 0.2s;
   }
 
   .info-card {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     text-align: center;
-    border-radius: 15px;
-    min-height: 200px;
+    border-radius: 12px;
+    min-height: 150px;
   }
 
-  .progress-circle{
+  .progress-circle {
     margin: auto;
   }
 
   .progress-circle, .spinner {
-    height: 6rem;
-    width: 6rem;
+    height: 4rem;
+    width: 4rem;
   }
 
   .progress-circle-danger .CircularProgressbar-path {
@@ -189,7 +219,7 @@ $secondary: #519259;
     stroke: $primary;
   }
 
-  .progress-circle .CircularProgressbar-text, .progress-circle-danger .CircularProgressbar-text{
+  .progress-circle .CircularProgressbar-text, .progress-circle-danger .CircularProgressbar-text {
     fill: $primary;
     font-family: sans-serif;
     font-size: 18px;
@@ -197,19 +227,19 @@ $secondary: #519259;
 
   .label {
     //font-weight: bold;
-    font-size: 18px;
+    font-size: 14px;
   }
 
 }
 
-#user-panel{
-  .list-item{
+#user-panel {
+  .list-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
   }
 
-  .btn-remove{
+  .btn-remove {
     width: 32px !important;
     min-height: 32px !important;
     border-radius: 10px !important;
@@ -250,10 +280,17 @@ input[type=text], input[type=password], input[type=email] {
   letter-spacing: -0.02em;
 }
 
-button {
+.btn {
   width: 100%;
-  min-height: 48px;
-  margin-top: 32px;
+  height: 48px;
+  //margin-top: 32px;
   padding: 12px 32px;
   border-radius: 500px !important;
+}
+
+.btn-sm {
+  height: 38px !important;
+  padding: 4px 8px;
+  font-size: .875rem;
+  border-radius: 0.2rem;
 }

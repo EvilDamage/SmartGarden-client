@@ -46,7 +46,7 @@ const Login = () => {
                             <label className="form-label mt-2">Hasło</label>
                             <input type="password" className="form-control" placeholder="Min. 8 znaków"
                                    onChange={(e) => setPassword(e.target.value)} required={true}/>
-                            <button type="button" className="btn btn-primary"
+                            <button type="button" className="btn btn-primary mt-3"
                                     onClick={() => {
                                         if (email !== '' && password !== '') {
                                             login({
@@ -61,7 +61,7 @@ const Login = () => {
                                                     history.push('/')
                                                 }
                                             }).catch((e) => {
-                                                console.log(e)
+                                                console.error(e)
                                             })
                                         }
                                     }}>
@@ -81,11 +81,12 @@ const Login = () => {
             </div>
             <Modal
                 show={modalVisibility}
+                onHide={() => setModalVisibility(false)}
                 size="md"
                 aria-labelledby="contained-modal-title-vcenter"
                 centered
             >
-                <Modal.Header>
+                <Modal.Header closeButton>
                     <Modal.Title id="contained-modal-title-vcenter">
                         Nie pamiętasz hasła?
                     </Modal.Title>
@@ -95,7 +96,7 @@ const Login = () => {
                         <label className="form-label">Adres Email</label>
                         <input type="email" className="form-control" placeholder="mail@website.com"
                                onChange={(e) => setEmailModal(e.target.value)}/>
-                        <button type="button" className="btn btn-primary"
+                        <button type="button" className="btn btn-primary mt-3"
                                 onClick={() => resetPassword({variables: {email: emailModal}}).then((res) => {
                                     setModalVisibility(false)
                                 })}

@@ -15,7 +15,7 @@ const NavBar = ({tabKey, setKey}) => {
                 </Dropdown.Toggle>
                 <Dropdown.Menu className={'dropdown'}>
                     <Dropdown.Item href="/users">Zarządzaj</Dropdown.Item>
-                    <Dropdown.Item href="/">Wyloguj</Dropdown.Item>
+                    <Dropdown.Item href="/login">Wyloguj</Dropdown.Item>
                 </Dropdown.Menu>
             </Dropdown>
         </div>

@@ -10,7 +10,6 @@ import ContentWrapper from "./components/ContentWrapper";
 import NoMatch from "./pages/NoMatch";
 import {ApolloProvider, ApolloClient, createHttpLink, InMemoryCache, useApolloClient} from "@apollo/client";
 import {setContext} from "@apollo/client/link/context";
-import {isAuthenticated} from "./helpers/config";
 import Register from "./pages/Register";
 import Stats from "./pages/Stats";
 import Settings from "./pages/Settings";

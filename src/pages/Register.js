@@ -39,7 +39,7 @@ const Register = () => {
                             <label className="form-label mt-2">Hasło</label>
                             <input type="password" className="form-control" placeholder="Min. 8 znaków"
                                    onChange={(e) => setPassword(e.target.value)}/>
-                            <button type="button" className="btn btn-primary"
+                            <button type="button" className="btn btn-primary mt-3"
                                     onClick={() => {
                                         if (name !== '' && email !== '' && password !== '') {
                                             register({
@@ -53,7 +53,7 @@ const Register = () => {
                                                     history.push('/login', {registerSuccess: true})
                                                 }
                                             }).catch((e) => {
-                                                console.err(e)
+                                                console.error(e)
                                             })
                                         }
                                     }}>

@@ -16,15 +16,15 @@ const Home = () => {
             <Banner title={'Dashboard'}/>
             <Container id={'home'} className={'mt-3'}>
                 <div className={'title'}>
-                <span>
-                    <h4 style={{display: 'inline-block'}}>Ostatni odczyt</h4>
-                    <small className={'text-muted'} style={{marginLeft: '1em'}}>
-                        {data && formatDateForDisplay(data && data.currentSensorsReading.created_at)}
-                    </small>
-                </span>
-
+                    <span>
+                        <h4 style={{display: 'inline-block'}}>Ostatni odczyt</h4>
+                        <small className={'text-muted'} style={{marginLeft: '1em'}}>
+                            {data && formatDateForDisplay(data && data.currentSensorsReading.created_at)}
+                        </small>
+                    </span>
                     <div className={loading ? 'refeach disabled' : 'refeach'} onClick={() => !loading && refetch()}>
-                        <IoReload/></div>
+                        <IoReload/>
+                    </div>
                 </div>
                 <Row>
                     <Col lg={2} md={3} className={'mt-2'}>
@@ -62,7 +62,7 @@ const Home = () => {
                                     <CircularProgressbarWithChildren
                                         maxValue={1500}
                                         value={data && data.currentSensorsReading.air_pressure}>
-                                <span style={{fontSize: '18px', color: '#064635'}}>
+                                <span style={{fontSize: '12px', color: '#064635'}}>
                                     {data && data.currentSensorsReading.air_pressure}<br/>hPa
                                 </span>
                                     </CircularProgressbarWithChildren>
@@ -118,6 +118,11 @@ const Home = () => {
                         </Card>
                     </Col>
                 </Row>
+                <div className={'title mt-3'}>
+                    <span>
+                        <h4 style={{display: 'inline-block'}}>Aktywny plan</h4>
+                    </span>
+                </div>
             </Container>
         </>
     )
