@@ -1,6 +1,13 @@
 import Banner from "../components/Banner";
 import {useMutation, useQuery} from "@apollo/client";
-import {ADD_PLANS, CURRENT_SENSOR_READS, DELETE_PLAN, GET_PLANS} from "../helpers/gqlQueries";
+import {
+    ADD_PLANS,
+    CURRENT_SENSOR_READS,
+    DELETE_PLAN,
+    GET_PLANS,
+    GET_SETTINGS,
+    UPDATE_SETTINGS
+} from "../helpers/gqlQueries";
 import {FiUserMinus} from "react-icons/fi";
 import React, {useEffect, useState} from "react";
 import {BsFillLightbulbFill, FaTemperatureHigh, GiPlantRoots, WiHumidity} from "react-icons/all";
@@ -16,6 +23,9 @@ const Plans = () => {
     const {data, loading, error, refetch} = useQuery(GET_PLANS);
     const [updatePlan, {loading: loadingUpdatePlan, error: ErrorUpdatePlan}] = useMutation(ADD_PLANS);
     const [deletePlan, {loading: loadingDeletePlan, error: ErrorDeletePlan}] = useMutation(DELETE_PLAN);
+
+    const {data: settings, loading: settingsLoading, error: settingsError, refetch: settingsRefeatch} = useQuery(GET_SETTINGS);
+    const [updateSettings, {loading: loadingUpdateSettings, error: ErrorUpdateSettings}] = useMutation(UPDATE_SETTINGS);
 
     useEffect(() => {
         addEmptyPlanItem()
@@ -54,7 +64,23 @@ const Plans = () => {
                             return (
                                 <div className="accordion-item">
                                     <h2 className="accordion-header" id="flush-headingOne">
+                                        <Form.Check
+                                            style={{position: 'absolute', zIndex: 100, marginLeft: 15}}
+                                            type="radio"
+                                            checked={settings && settings.settings[0].current_plan === plan.id}
+                                            onClick={() => {
+                                                console.log('asdasd')
+                                                updateSettings({
+                                                    variables: {
+                                                        current_plan: plan.id
+                                                    }
+                                                }).then(()=>{
+                                                    settingsRefeatch()
+                                                })
+                                            }}
+                                        />
                                         <button className="accordion-button collapsed button-title" type="button"
+                                                style={{paddingLeft: 65}}
                                                 data-bs-toggle="collapse" data-bs-target={'#index' + index}
                                                 aria-expanded="false" aria-controls="flush-collapseTwo">
                                             {plan.name}

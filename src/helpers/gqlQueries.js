@@ -71,9 +71,9 @@ query Query {
 }
 `
 
-export const CURRENT_SENSOR_READS = gql`
+export const LAST_SENSOR_READS = gql`
 query Query {
-      currentSensorsReading {
+  lastSensorsReading {
     air_humidity
     soil_humidity
     air_temperature
@@ -86,9 +86,10 @@ query Query {
 `
 
 export const UPDATE_SETTINGS = gql`
-mutation Mutation ($mode: String, $interval: Int, $pump: Boolean, $pump_fertilizer: Boolean, $light: Boolean, $fan: Boolean){
-  updateSettings (mode: $mode, interval: $interval, pump: $pump, pump_fertilizer: $pump_fertilizer, light: $light, fan: $fan){
+mutation Mutation ($mode: String, $interval: Int, $current_plan: ID, $pump: Boolean, $pump_fertilizer: Boolean, $light: Boolean, $fan: Boolean){
+  updateSettings (mode: $mode, interval: $interval, current_plan: $current_plan, pump: $pump, pump_fertilizer: $pump_fertilizer, light: $light, fan: $fan){
     id
+    current_plan
     mode
     interval
     pump
@@ -105,6 +106,7 @@ export const GET_SETTINGS = gql`
 query Query {
   settings {
     mode
+    current_plan
     interval
     current_plan
     pump
@@ -118,8 +120,8 @@ query Query {
 `
 
 export const GET_PLANS = gql`
-query Query {
-  profiles {
+query Query ($id: ID){
+  profiles (id: $id){
     id
     name
     schedule{

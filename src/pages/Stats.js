@@ -35,9 +35,7 @@ const Stats = () => {
     const options = {
         responsive: true,
         plugins: {
-            legend: {
-                position: 'top',
-            },
+
         },
     };
 
@@ -45,7 +43,7 @@ const Stats = () => {
         return formatDateForDisplay(label.created_at)
     });
 
-    const dataSheet = {
+    const temperatureData = {
         labels,
         datasets: [
             {
@@ -56,6 +54,12 @@ const Stats = () => {
                 borderColor: 'rgb(255, 99, 132)',
                 backgroundColor: 'rgba(255, 99, 132, 0.5)',
             },
+        ],
+    };
+
+    const humidityData = {
+        labels,
+        datasets: [
             {
                 label: 'Wilgotność powietrza',
                 data: data && data.sensorReads.map((label) => {
@@ -64,6 +68,12 @@ const Stats = () => {
                 borderColor: 'rgb(56,142,231)',
                 backgroundColor: 'rgb(99,174,255)',
             },
+        ],
+    };
+
+    const soilHumidityData = {
+        labels,
+        datasets: [
             {
                 label: 'Wilgotność gleby',
                 data: data && data.sensorReads.map((label) => {
@@ -72,6 +82,12 @@ const Stats = () => {
                 borderColor: 'rgb(32,121,27)',
                 backgroundColor: 'rgb(47,150,40)',
             },
+        ],
+    };
+
+    const lightData = {
+        labels,
+        datasets: [
             {
                 label: 'Pozim oświetlenia',
                 data: data && data.sensorReads.map((label) => {
@@ -80,6 +96,12 @@ const Stats = () => {
                 borderColor: 'rgb(196,177,27)',
                 backgroundColor: 'rgb(233,214,52)',
             },
+        ],
+    };
+
+    const pressureData = {
+        labels,
+        datasets: [
             {
                 label: 'Ciśnienie atmosferyczne',
                 data: data && data.sensorReads.map((label) => {
@@ -87,8 +109,13 @@ const Stats = () => {
                 }),
                 borderColor: 'rgb(27,182,196)',
                 backgroundColor: 'rgb(28,219,239)',
-                hidden: true,
             },
+        ],
+    };
+
+    const cpuData = {
+        labels,
+        datasets: [
             {
                 label: 'Temperatura CPU',
                 data: data && data.sensorReads.map((label) => {
@@ -104,11 +131,40 @@ const Stats = () => {
     return (
         <>
             <Banner title={'Statystyki'}/>
-            <Container className={'mt-3'}>
-                {
-                    data && <Line options={options} data={dataSheet}/>
-                }
-            </Container>
+            <div className={'container mt-3'}>
+                <div className={'row'}>
+                    <div className={'col-md-6'}>
+                        {
+                            data && <Line options={options} data={temperatureData}/>
+                        }
+                    </div>
+                    <div className={'col-md-6'}>
+                        {
+                            data && <Line options={options} data={humidityData}/>
+                        }
+                    </div>
+                    <div className={'col-md-6'}>
+                        {
+                            data && <Line options={options} data={soilHumidityData}/>
+                        }
+                    </div>
+                    <div className={'col-md-6'}>
+                        {
+                            data && <Line options={options} data={lightData}/>
+                        }
+                    </div>
+                    <div className={'col-md-6'}>
+                        {
+                            data && <Line options={options} data={pressureData}/>
+                        }
+                    </div>
+                    <div className={'col-md-6'}>
+                        {
+                            data && <Line options={options} data={cpuData}/>
+                        }
+                    </div>
+                </div>
+            </div>
         </>
     )
 }

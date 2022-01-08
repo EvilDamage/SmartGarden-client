@@ -35,7 +35,7 @@ const User = () => {
                             <label className="form-label mt-3">Nowe hasło</label>
                             <input type="password" className="form-control" placeholder="mail@website.com"
                                    onChange={(e) => setEditPassword(e.target.value)} required={true}/>
-                            <button type="button" className="btn btn-primary"
+                            <button type="button" className="btn btn-primary mt-3"
                                     onClick={() => {
                                         if (editName !== '' && editEmail !== '' && editPassword !== '') {
                                             editUser({
@@ -66,7 +66,7 @@ const User = () => {
                             <label className="form-label mt-3">Adres Email</label>
                             <input type="email" className="form-control" placeholder="mail@website.com"
                                    onChange={(e) => setAddEmail(e.target.value)} required={true}/>
-                            <button type="button" className="btn btn-primary"
+                            <button type="button" className="btn btn-primary mt-3"
                                     onClick={() => {
                                         if (addName !== '' && addEmail !== '') {
                                             addUser({

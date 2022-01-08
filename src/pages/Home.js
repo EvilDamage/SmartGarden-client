@@ -1,15 +1,24 @@
-import {Button, Card, Col, Container, Row, Spinner} from "react-bootstrap";
+import {Button, Card, Col, Container, Form, Row, Spinner} from "react-bootstrap";
 import {useQuery} from "@apollo/client";
-import {CURRENT_SENSOR_READS} from "../helpers/gqlQueries";
+import {GET_PLANS, GET_SETTINGS, LAST_SENSOR_READS} from "../helpers/gqlQueries";
 import {CircularProgressbar, CircularProgressbarWithChildren} from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import {IoReload} from 'react-icons/io5'
 import {formatDateForDisplay} from "../helpers/dataParse";
 import Banner from "../components/Banner";
+import {BsFillLightbulbFill, FaTemperatureHigh, GiPlantRoots, WiHumidity} from "react-icons/all";
+import React from "react";
 
 
 const Home = () => {
-    const {data, loading, error, refetch} = useQuery(CURRENT_SENSOR_READS, {notifyOnNetworkStatusChange: true});
+    const {data, loading, error, refetch} = useQuery(LAST_SENSOR_READS, {notifyOnNetworkStatusChange: true});
+    const {data: settings, loading: settingsLoading, error: settingsError} = useQuery(GET_SETTINGS);
+
+    const {
+        data: plansData,
+        loading: planLoading,
+        error: plansError
+    } = useQuery(GET_PLANS, {variables: {id: settings && settings.settings[0].current_plan}});
 
     return (
         <>
@@ -19,7 +28,7 @@ const Home = () => {
                     <span>
                         <h4 style={{display: 'inline-block'}}>Ostatni odczyt</h4>
                         <small className={'text-muted'} style={{marginLeft: '1em'}}>
-                            {data && formatDateForDisplay(data && data.currentSensorsReading.created_at)}
+                            {data && formatDateForDisplay(data && data.lastSensorsReading.created_at)}
                         </small>
                     </span>
                     <div className={loading ? 'refeach disabled' : 'refeach'} onClick={() => !loading && refetch()}>
@@ -32,8 +41,8 @@ const Home = () => {
                             {!loading ?
                                 <div className={'progress-circle'}>
                                     <CircularProgressbar
-                                        value={data && data.currentSensorsReading.air_temperature}
-                                        text={`${data && data.currentSensorsReading.air_temperature}°C`}/>
+                                        value={data && data.lastSensorsReading.air_temperature}
+                                        text={`${data && data.lastSensorsReading.air_temperature}°C`}/>
                                 </div>
                                 :
                                 <Spinner animation="border" variant="primary" className={'spinner'}/>
@@ -46,8 +55,8 @@ const Home = () => {
                             {!loading ?
                                 <div className={'progress-circle'}>
                                     <CircularProgressbar
-                                        value={data && data.currentSensorsReading.air_humidity}
-                                        text={`${data && data.currentSensorsReading.air_humidity}%`}/>
+                                        value={data && data.lastSensorsReading.air_humidity}
+                                        text={`${data && data.lastSensorsReading.air_humidity}%`}/>
                                 </div>
                                 :
                                 <Spinner animation="border" variant="primary" className={'spinner'}/>
@@ -61,9 +70,9 @@ const Home = () => {
                                 <div className={'progress-circle'}>
                                     <CircularProgressbarWithChildren
                                         maxValue={1500}
-                                        value={data && data.currentSensorsReading.air_pressure}>
+                                        value={data && data.lastSensorsReading.air_pressure}>
                                 <span style={{fontSize: '12px', color: '#064635'}}>
-                                    {data && data.currentSensorsReading.air_pressure}<br/>hPa
+                                    {data && data.lastSensorsReading.air_pressure}<br/>hPa
                                 </span>
                                     </CircularProgressbarWithChildren>
                                 </div>
@@ -79,8 +88,8 @@ const Home = () => {
                             {!loading ?
                                 <div className={'progress-circle'}>
                                     <CircularProgressbar
-                                        value={data && data.currentSensorsReading.soil_humidity}
-                                        text={`${data && data.currentSensorsReading.soil_humidity}%`}/>
+                                        value={data && data.lastSensorsReading.soil_humidity}
+                                        text={`${data && data.lastSensorsReading.soil_humidity}%`}/>
                                 </div>
                                 :
                                 <Spinner animation="border" variant="primary" className={'spinner'}/>
@@ -93,8 +102,8 @@ const Home = () => {
                             {!loading ?
                                 <div className={'progress-circle'}>
                                     <CircularProgressbar
-                                        value={data && data.currentSensorsReading.light_level}
-                                        text={`${data && data.currentSensorsReading.light_level}%`}/>
+                                        value={data && data.lastSensorsReading.light_level}
+                                        text={`${data && data.lastSensorsReading.light_level}%`}/>
                                 </div>
                                 :
                                 <Spinner animation="border" variant="primary" className={'spinner'}/>
@@ -107,9 +116,9 @@ const Home = () => {
                             {!loading ?
                                 <div className={'progress-circle'}>
                                     <CircularProgressbar
-                                        className={data && data.currentSensorsReading.cpu_temperature > 50 && 'progress-circle-danger'}
-                                        maxValue={80} value={data && data.currentSensorsReading.cpu_temperature}
-                                        text={`${data && data.currentSensorsReading.cpu_temperature.toFixed(2)}°C`}/>
+                                        className={data && data.lastSensorsReading.cpu_temperature > 50 && 'progress-circle-danger'}
+                                        maxValue={80} value={data && data.lastSensorsReading.cpu_temperature}
+                                        text={`${data && data.lastSensorsReading.cpu_temperature.toFixed(2)}°C`}/>
                                 </div>
                                 :
                                 <Spinner animation="border" variant="primary" className={'spinner'}/>
@@ -118,10 +127,57 @@ const Home = () => {
                         </Card>
                     </Col>
                 </Row>
-                <div className={'title mt-3'}>
+                <div className={'title mt-3 w-100'}>
                     <span>
                         <h4 style={{display: 'inline-block'}}>Aktywny plan</h4>
+                        <p>{settings && settings.settings[0].current_plan ? '' : 'Nie wybrano planu'}</p>
                     </span>
+                </div>
+                <div className="accordion-item w-100">
+                    <h2 className="accordion-header" id="flush-headingOne">
+                        <button className="accordion-button collapsed button-title" type="button"
+                                data-bs-toggle="collapse" data-bs-target={'#index'}
+                                aria-expanded="false" aria-controls="flush-collapseTwo">
+                            {plansData && plansData.profiles[0].name}
+                        </button>
+                    </h2>
+                    <div id={'index'} className="accordion-collapse collapse"
+                         aria-labelledby="headingOne"
+                         data-bs-parent="#accordionExample">
+                        <div className="accordion-body">
+                            <ul className="list-group">
+                                {
+                                    plansData && plansData.profiles[0].schedule.map((schedule) => {
+                                        return (
+                                            <li className="list-group-item d-flex justify-content-between align-items-start">
+                                                            <span>
+                                                                <FaTemperatureHigh/><span style={{
+                                                                marginLeft: '0.5em',
+                                                                marginRight: '1em'
+                                                            }}>{schedule.air_temperature}</span>
+                                                                <WiHumidity/><span style={{
+                                                                marginLeft: '0.5em',
+                                                                marginRight: '1em'
+                                                            }}>{schedule.air_humidity}%</span>
+                                                                <GiPlantRoots/><span style={{
+                                                                marginLeft: '0.5em',
+                                                                marginRight: '1em'
+                                                            }}>{schedule.soil_humidity}%</span>
+                                                                <BsFillLightbulbFill/><span style={{
+                                                                marginLeft: '0.5em',
+                                                                marginRight: '1em'
+                                                            }}>{schedule.light.start_hour}-{schedule.light.end_hour}</span>
+
+                                                            </span>
+                                                <span
+                                                    className="small">{schedule.duration} dni</span>
+                                            </li>
+                                        )
+                                    })
+                                }
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </Container>
         </>
