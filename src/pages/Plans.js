@@ -49,6 +49,11 @@ const Plans = () => {
         <div id={'plans'}>
             <Banner title={'Plany'}/>
             <div className={'container'}>
+                {/*<div className={'title mt-3 mb-3'}>*/}
+                {/*    <span>*/}
+                {/*        <h4 style={{display: 'inline-block'}}>Dane manualne</h4>*/}
+                {/*    </span>*/}
+                {/*</div>*/}
                 <div className={'title mt-3 mb-3'}>
                     <span>
                         <h4 style={{display: 'inline-block'}}>Zapisane plany</h4>

@@ -12,8 +12,9 @@ import {
     Legend
 } from 'chart.js';
 import {Line} from 'react-chartjs-2';
-import {formatDateForDisplay} from "../helpers/dataParse";
+import {formatDateForDisplay, formatDateForFileName} from "../helpers/dataParse";
 import Banner from "../components/Banner";
+import {CSVLink, CSVDownload} from "react-csv";
 
 
 const Stats = () => {
@@ -34,9 +35,15 @@ const Stats = () => {
 
     const options = {
         responsive: true,
-        plugins: {
-
-        },
+        scales: {
+            x: {
+                ticks: {
+                    callback: function (val, index) {
+                        return index % 2 === 0 ? this.getLabelForValue(val) : '';
+                    },
+                },
+            }
+        }
     };
 
     const labels = data && data.sensorReads.map((label) => {
@@ -47,7 +54,7 @@ const Stats = () => {
         labels,
         datasets: [
             {
-                label: 'Temperatura',
+                label: 'Temperatura [°C]',
                 data: data && data.sensorReads.map((label) => {
                     return label.air_temperature
                 }),
@@ -61,7 +68,7 @@ const Stats = () => {
         labels,
         datasets: [
             {
-                label: 'Wilgotność powietrza',
+                label: 'Wilgotność powietrza [%]',
                 data: data && data.sensorReads.map((label) => {
                     return label.air_humidity
                 }),
@@ -75,7 +82,7 @@ const Stats = () => {
         labels,
         datasets: [
             {
-                label: 'Wilgotność gleby',
+                label: 'Wilgotność gleby [%]',
                 data: data && data.sensorReads.map((label) => {
                     return label.soil_humidity
                 }),
@@ -89,7 +96,7 @@ const Stats = () => {
         labels,
         datasets: [
             {
-                label: 'Pozim oświetlenia',
+                label: 'Pozim oświetlenia [%]',
                 data: data && data.sensorReads.map((label) => {
                     return label.light_level
                 }),
@@ -103,7 +110,7 @@ const Stats = () => {
         labels,
         datasets: [
             {
-                label: 'Ciśnienie atmosferyczne',
+                label: 'Ciśnienie atmosferyczne [hPa]',
                 data: data && data.sensorReads.map((label) => {
                     return label.air_pressure
                 }),
@@ -117,7 +124,7 @@ const Stats = () => {
         labels,
         datasets: [
             {
-                label: 'Temperatura CPU',
+                label: 'Temperatura CPU [°C]',
                 data: data && data.sensorReads.map((label) => {
                     return label.cpu_temperature
                 }),
@@ -132,6 +139,12 @@ const Stats = () => {
         <>
             <Banner title={'Statystyki'}/>
             <div className={'container mt-3'}>
+
+                {data &&
+                <CSVLink data={data.sensorReads} className="btn btn-primary w-25 mt-3 mb-3" filename={"statystyki_" + formatDateForFileName(new Date()) + ".csv"}>
+                    Eksportuj dane w formacie .csv</CSVLink>
+                }
+
                 <div className={'row'}>
                     <div className={'col-md-6'}>
                         {

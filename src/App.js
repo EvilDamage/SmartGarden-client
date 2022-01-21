@@ -80,8 +80,6 @@ function ProvideAuth({children}) {
 function PrivateRoute({children, ...rest}) {
     const client = useApolloClient();
 
-    // console.log(client)
-
     return (
         <Route
             {...rest}

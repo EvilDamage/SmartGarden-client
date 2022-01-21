@@ -4,6 +4,7 @@ import {LOGIN_USER, RESET_PASSWORD} from "../helpers/gqlQueries";
 import {useHistory} from "react-router-dom";
 import {Modal} from 'react-bootstrap';
 
+
 const Login = () => {
     const history = useHistory();
 
@@ -58,6 +59,7 @@ const Login = () => {
                                                 if (res.data.login) {
                                                     localStorage.setItem('access_token', res.data.login.access_token);
                                                     localStorage.setItem('refresh_token', res.data.login.refresh_token);
+                                                    localStorage.setItem('user', 'Nazwa użytkownika');
                                                     history.push('/')
                                                 }
                                             }).catch((e) => {

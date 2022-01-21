@@ -23,7 +23,7 @@ const Home = () => {
     return (
         <>
             <Banner title={'Dashboard'}/>
-            <Container id={'home'} className={'mt-3'}>
+            <div id={'home'} className={'container mt-3'}>
                 <div className={'title'}>
                     <span>
                         <h4 style={{display: 'inline-block'}}>Ostatni odczyt</h4>
@@ -129,7 +129,7 @@ const Home = () => {
                 </Row>
                 <div className={'title mt-3 w-100'}>
                     <span>
-                        <h4 style={{display: 'inline-block'}}>Aktywny plan</h4>
+                        <h4 style={{display: 'inline-block'}}>Wybrany plan</h4>
                         <p>{settings && settings.settings[0].current_plan ? '' : 'Nie wybrano planu'}</p>
                     </span>
                 </div>
@@ -179,7 +179,7 @@ const Home = () => {
                         </div>
                     </div>
                 </div>
-            </Container>
+            </div>
         </>
     )
 }

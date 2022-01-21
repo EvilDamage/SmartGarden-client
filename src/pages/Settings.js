@@ -75,7 +75,7 @@ const Settings = () => {
                             />
                         </div>
                     }
-                    <button type="button" className="btn btn-primary w-25"
+                    <button type="button" className="btn btn-primary w-25 mt-3"
                             onClick={() => {
                                 updateSettings({
                                     variables: {
