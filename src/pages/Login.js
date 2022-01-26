@@ -1,6 +1,6 @@
 import React, {useState} from "react";
-import {useMutation} from "@apollo/client";
-import {LOGIN_USER, RESET_PASSWORD} from "../helpers/gqlQueries";
+import {useMutation, useQuery} from "@apollo/client";
+import {GET_USER, LOGIN_USER, RESET_PASSWORD} from "../helpers/gqlQueries";
 import {useHistory} from "react-router-dom";
 import {Modal} from 'react-bootstrap';
 
@@ -13,6 +13,10 @@ const Login = () => {
     const [password, setPassword] = useState('')
     const [modalVisibility, setModalVisibility] = useState(false)
     const [registerAlert, setRegisterAlert] = useState(history.location.state ? history.location.state.registerSuccess : null)
+
+    const {data: userData, refetch: userDataRefeach} = useQuery(GET_USER);
+
+    console.log(userData)
 
     const [login, {data, loading, error}] = useMutation(LOGIN_USER);
     const [resetPassword, {
@@ -57,10 +61,12 @@ const Login = () => {
                                                 }
                                             }).then((res) => {
                                                 if (res.data.login) {
-                                                    localStorage.setItem('access_token', res.data.login.access_token);
-                                                    localStorage.setItem('refresh_token', res.data.login.refresh_token);
-                                                    localStorage.setItem('user', 'Nazwa użytkownika');
-                                                    history.push('/')
+                                                    userDataRefeach().then(r => {
+                                                        localStorage.setItem('access_token', res.data.login.access_token);
+                                                        localStorage.setItem('refresh_token', res.data.login.refresh_token);
+                                                        localStorage.setItem('user', userData.me.name);
+                                                        history.push('/')
+                                                    })
                                                 }
                                             }).catch((e) => {
                                                 console.error(e)

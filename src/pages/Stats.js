@@ -1,6 +1,6 @@
-import {Container} from "react-bootstrap";
+import {Container, Spinner} from "react-bootstrap";
 import {useQuery} from "@apollo/client";
-import {SENSOR_READS} from "../helpers/gqlQueries";
+import {HISTORY, SENSOR_READS} from "../helpers/gqlQueries";
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -12,15 +12,21 @@ import {
     Legend
 } from 'chart.js';
 import {Line} from 'react-chartjs-2';
-import {formatDateForDisplay, formatDateForFileName} from "../helpers/dataParse";
+import {customDatePicker, formatDateForDisplay, formatDateForFileName} from "../helpers/dataParse";
 import Banner from "../components/Banner";
 import {CSVLink, CSVDownload} from "react-csv";
-
+import React, {useState} from "react";
 
 const Stats = () => {
-    const {data, loading, error, refetch} = useQuery(SENSOR_READS);
+    const [startDate, setStartDate] = useState(new Date(customDatePicker(1)).toISOString())
+    const [endDate, setEndDate] = useState(new Date().toISOString())
 
-    // setInterval(refetch, 1 * 60 * 1000)
+    const {data, loading, error, refetch} = useQuery(SENSOR_READS, {
+        variables: {
+            start_date: startDate,
+            end_date: endDate,
+        }
+    });
 
     ChartJS.register(
         CategoryScale,
@@ -139,10 +145,43 @@ const Stats = () => {
         <>
             <Banner title={'Statystyki'}/>
             <div className={'container mt-3'}>
+                <div className={'row mb-3'}>
+                    <div className={'col-lg-2 col-md-4 mb-1'}>
+                        <button type="button" className="btn btn-primary" style={{marginRight: '1em'}} onClick={() => {
+                            setStartDate(new Date(customDatePicker(1)).toISOString())
+                        }}>1 dzień
+                        </button>
+                    </div>
+                    <div className={'col-lg-2 col-md-4 mb-1'}>
+                        <button type="button" className="btn btn-primary" style={{marginRight: '1em'}} onClick={() => {
+                            setStartDate(new Date(customDatePicker(7)).toISOString())
+                        }}>7 dni
+                        </button>
+                    </div>
+                    <div className={'col-lg-2 col-md-4 mb-1'}>
+                        <button type="button" className="btn btn-primary" style={{marginRight: '1em'}} onClick={() => {
+                            setStartDate(new Date(customDatePicker(14)).toISOString())
+                        }}>14 dni
+                        </button>
+                    </div>
+                    <div className={'col-lg-6'}>
+                        {data ?
+                            <CSVLink data={data.sensorReads} className="btn btn-primary"
+                                     filename={"statystyki_" + formatDateForFileName(new Date()) + ".csv"}>
+                                Eksportuj dane w formacie .csv</CSVLink>
+                            :
+                            <div className={'mt-2'}  style={{textAlign: 'center'}}>
+                                <Spinner animation="border" variant="primary" className={'spinner'}/>
+                            </div>
+                        }
+                    </div>
+                </div>
 
-                {data &&
-                <CSVLink data={data.sensorReads} className="btn btn-primary w-25 mt-3 mb-3" filename={"statystyki_" + formatDateForFileName(new Date()) + ".csv"}>
-                    Eksportuj dane w formacie .csv</CSVLink>
+                {loading &&
+                    <div className={'mt-3'} style={{textAlign: 'center'}}>
+                        <Spinner animation="border" variant="primary" className={'spinner'} style={{height: '6em', width: '6em'}}/>
+                        <p>Ładowanie</p>
+                    </div>
                 }
 
                 <div className={'row'}>

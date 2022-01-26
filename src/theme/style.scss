@@ -35,7 +35,9 @@ $secondary: #519259;
   display: flex;
   background-color: #f5f5f5;
 
-  overflow-y: scroll;
+  padding-bottom: 5em;
+
+  //overflow-y: scroll;
 
   .main-content {
     display: block;
@@ -79,6 +81,69 @@ $secondary: #519259;
 }
 
 // Components
+
+#timePicker {
+
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+
+
+  .picker-label {
+    min-height: 48px;
+    margin-bottom: 0px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    padding-left: 24px;
+    border: 1px solid #e1dfec;
+    border-radius: 500px;
+    background-color: #fff;
+    color: #8c87a6;
+    letter-spacing: -0.02em;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  position: relative;
+
+  .clock-icon {
+    margin-right: 1em;
+  }
+
+  .time-pick {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    position: absolute;
+    top: 52px;
+    left: 0;
+    border: 1px solid #e1dfec;
+    border-radius: 15px;
+    background-color: #fff;
+    width: 100%;
+    height: 5em;
+    padding: 1em 0;
+    font-size: 24px;
+    line-height: 24px;
+    z-index: 200;
+  }
+
+  .save{
+    background: $primary;
+    padding: 0.2em;
+    margin: 0.2em;
+    margin-left: 0.6em;
+    border-radius: 5px !important;
+    width: 42px;
+    font-size: 24px;
+  }
+}
 
 #navbar {
   position: absolute;

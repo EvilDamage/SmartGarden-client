@@ -1,7 +1,7 @@
 import Banner from "../components/Banner";
 import React, {useEffect, useState} from "react";
 import {useMutation, useQuery} from "@apollo/client";
-import {ADD_USER, DELETE_USER, EDIT_USER, GET_USERS} from "../helpers/gqlQueries";
+import {ADD_USER, DELETE_USER, EDIT_USER, GET_USER, GET_USERS} from "../helpers/gqlQueries";
 import {FiUserMinus, FiUserPlus} from 'react-icons/fi'
 
 const User = () => {
@@ -13,6 +13,7 @@ const User = () => {
     const [editPassword, setEditPassword] = useState('')
 
     const {data: usersList, refetch: usersRefeach} = useQuery(GET_USERS)
+    const {data} = useQuery(GET_USER)
     const [addUser, {loading: loadingAddUser, error: errorAddUser}] = useMutation(ADD_USER)
     const [editUser, {loading: loadingEditUser, error: errorEditUser}] = useMutation(EDIT_USER)
     const [deleteUser, {loading: LoadingDeleteUser, error: errorDeleteUser}] = useMutation(DELETE_USER)
@@ -91,20 +92,23 @@ const User = () => {
                             {
                                 usersList && usersList.users.map((user) => {
                                     return (
-                                        <li className={user.confirmed ? "list-group-item list-item" : "list-group-item list-item list-group-item-dark"}>
+                                        <li className={user.confirmed ? "list-group-item list-item" : "list-group-item list-item list-group-item-dark"} style={{height: '65px'}}>
                                             <div>
                                                 <span style={{marginRight: '0.5rem'}}>{user.name}</span>
                                                 <small className={"text-muted"}>{user.email}</small>
                                             </div>
-                                            <button type="button" className="btn btn-danger btn-remove" onClick={()=>{
-                                                deleteUser({
-                                                    variables: {
-                                                        id: user.id
-                                                    }
-                                                }).then(()=>{
-                                                    usersRefeach()
-                                                })
-                                            }}><FiUserMinus/></button>
+                                            {
+                                                data && data.me.id !== user.id &&
+                                                    <button type="button" className="btn btn-danger btn-remove" onClick={()=>{
+                                                        deleteUser({
+                                                            variables: {
+                                                                id: user.id
+                                                            }
+                                                        }).then(()=>{
+                                                            usersRefeach()
+                                                        })
+                                                    }}><FiUserMinus/></button>
+                                            }
                                         </li>
                                     )
                                 })

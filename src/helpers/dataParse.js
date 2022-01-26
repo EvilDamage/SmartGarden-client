@@ -13,3 +13,14 @@ export const formatDateForFileName = (date) => {
         // return new Intl.DateTimeFormat('pl-PL', {timeStyle: "medium", dateStyle: "short"}).format(new Date(date));
     }
 }
+
+export const customDatePicker = (days) => {
+    if(!isNaN(days)){
+        var date = new Date();
+        return date.setDate(date.getDate() - days);
+    }
+}
+
+export const calculateDaysBetween = (startDate, endDate) => {
+   return moment(startDate).diff(moment(endDate), 'days')
+}

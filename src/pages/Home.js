@@ -4,13 +4,16 @@ import {GET_PLANS, GET_SETTINGS, LAST_SENSOR_READS} from "../helpers/gqlQueries"
 import {CircularProgressbar, CircularProgressbarWithChildren} from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import {IoReload} from 'react-icons/io5'
-import {formatDateForDisplay} from "../helpers/dataParse";
+import {calculateDaysBetween, formatDateForDisplay} from "../helpers/dataParse";
 import Banner from "../components/Banner";
 import {BsFillLightbulbFill, FaTemperatureHigh, GiPlantRoots, WiHumidity} from "react-icons/all";
-import React from "react";
+import React, {useEffect, useState} from "react";
 
 
 const Home = () => {
+    const [totalPlanDuration, setTotalPlanDuration] = useState(0)
+    const [planProgress, setPlanProgress] = useState(0)
+
     const {data, loading, error, refetch} = useQuery(LAST_SENSOR_READS, {notifyOnNetworkStatusChange: true});
     const {data: settings, loading: settingsLoading, error: settingsError} = useQuery(GET_SETTINGS);
 
@@ -19,6 +22,19 @@ const Home = () => {
         loading: planLoading,
         error: plansError
     } = useQuery(GET_PLANS, {variables: {id: settings && settings.settings[0].current_plan}});
+
+    useEffect(()=>{
+        let totalDuration = 0;
+        plansData && plansData.profiles[0].schedule.map((schedule)=>{
+            totalDuration += schedule.duration
+        })
+
+        setTotalPlanDuration(totalDuration)
+        setPlanProgress(calculateDaysBetween( new Date(), plansData && plansData.profiles[0].started_at))
+
+    }, [plansData])
+
+
 
     return (
         <>
@@ -130,26 +146,40 @@ const Home = () => {
                 <div className={'title mt-3 w-100'}>
                     <span>
                         <h4 style={{display: 'inline-block'}}>Wybrany plan</h4>
-                        <p>{settings && settings.settings[0].current_plan ? '' : 'Nie wybrano planu'}</p>
+                        {
+                            settings && settings.settings[0].mode === "manual" &&
+                            <p>System działa w trybie manualnym</p>
+                        }
+                        {
+                            settings && !settings.settings[0].current_plan &&
+                            <p>Nie wybrano planu</p>
+
+                        }
                     </span>
                 </div>
-                <div className="accordion-item w-100">
-                    <h2 className="accordion-header" id="flush-headingOne">
-                        <button className="accordion-button collapsed button-title" type="button"
-                                data-bs-toggle="collapse" data-bs-target={'#index'}
-                                aria-expanded="false" aria-controls="flush-collapseTwo">
-                            {plansData && plansData.profiles[0].name}
-                        </button>
-                    </h2>
-                    <div id={'index'} className="accordion-collapse collapse"
-                         aria-labelledby="headingOne"
-                         data-bs-parent="#accordionExample">
-                        <div className="accordion-body">
-                            <ul className="list-group">
-                                {
-                                    plansData && plansData.profiles[0].schedule.map((schedule) => {
-                                        return (
-                                            <li className="list-group-item d-flex justify-content-between align-items-start">
+                {
+                    settings && settings.settings[0].mode === "plan" &&
+                    <div className="accordion-item w-100">
+                        <h2 className="accordion-header" id="flush-headingOne">
+                            <button className="accordion-button collapsed button-title" type="button"
+                                    data-bs-toggle="collapse" data-bs-target={'#index'}
+                                    aria-expanded="false" aria-controls="flush-collapseTwo">
+                                {plansData && plansData.profiles[0].name}
+                                <div className="progress w-50" style={{marginLeft: '1em', marginRight: '0.2em'}}>
+                                    <div className="progress-bar" role="progressbar" style={{width: (planProgress/totalPlanDuration *100) + '%'}} aria-valuenow={planProgress}
+                                         aria-valuemin="0" aria-valuemax={totalPlanDuration}>{planProgress} dni</div>
+                                </div>{totalPlanDuration} dni
+                            </button>
+                        </h2>
+                        <div id={'index'} className="accordion-collapse collapse"
+                             aria-labelledby="headingOne"
+                             data-bs-parent="#accordionExample">
+                            <div className="accordion-body">
+                                <ul className="list-group">
+                                    {
+                                        plansData && plansData.profiles[0].schedule.map((schedule) => {
+                                            return (
+                                                <li className="list-group-item d-flex justify-content-between align-items-start">
                                                             <span>
                                                                 <FaTemperatureHigh/><span style={{
                                                                 marginLeft: '0.5em',
@@ -169,16 +199,17 @@ const Home = () => {
                                                             }}>{schedule.light.start_hour}-{schedule.light.end_hour}</span>
 
                                                             </span>
-                                                <span
-                                                    className="small">{schedule.duration} dni</span>
-                                            </li>
-                                        )
-                                    })
-                                }
-                            </ul>
+                                                    <span
+                                                        className="small">{schedule.duration} dni</span>
+                                                </li>
+                                            )
+                                        })
+                                    }
+                                </ul>
+                            </div>
                         </div>
                     </div>
-                </div>
+                }
             </div>
         </>
     )

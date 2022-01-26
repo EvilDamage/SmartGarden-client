@@ -21,6 +21,20 @@ mutation Mutation($email: String!) {
 }
 `
 
+export const GET_USER = gql`
+query Query {
+  me{
+    id
+    email
+    name
+    confirmed
+    role
+    created_at
+    updated_at
+  }
+}
+`
+
 export const GET_USERS = gql`
 query Query {
   users{
@@ -28,6 +42,7 @@ query Query {
     email
     name
     confirmed
+    role
     created_at
     updated_at
   }
@@ -56,9 +71,19 @@ mutation Mutation($id: ID!) {
 }
 `
 
+export const HISTORY = gql`
+query Query ($offset: Int, $limit: Int){
+  history(offset: $offset, limit: $limit){
+    id
+    comment
+    created_at
+  }
+}
+`
+
 export const SENSOR_READS = gql`
-query Query {
-  sensorReads{
+query Query ($start_date: String, $end_date: String){
+  sensorReads(start_date: $start_date, end_date: $end_date){
     id
     air_humidity
     soil_humidity
@@ -136,6 +161,7 @@ query Query ($id: ID){
         }
         duration
     }
+    started_at
     created_at
     updated_at
   }

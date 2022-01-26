@@ -5,7 +5,7 @@ import {
     CURRENT_SENSOR_READS,
     DELETE_PLAN,
     GET_PLANS,
-    GET_SETTINGS,
+    GET_SETTINGS, HISTORY,
     UPDATE_SETTINGS
 } from "../helpers/gqlQueries";
 import {FiUserMinus} from "react-icons/fi";
@@ -13,6 +13,7 @@ import React, {useEffect, useState} from "react";
 import {BsFillLightbulbFill, FaTemperatureHigh, GiPlantRoots, WiHumidity} from "react-icons/all";
 import {formatDateForDisplay} from "../helpers/dataParse";
 import {Form, Modal} from "react-bootstrap";
+import TimePicker from "../components/TimePicker";
 
 const Plans = () => {
     const [modalVisibility, setModalVisibility] = useState(false)
@@ -20,11 +21,19 @@ const Plans = () => {
     const [planName, setPlanName] = useState('')
     const [createList, setCreateList] = useState([])
 
+    const {data: historyData} = useQuery(HISTORY)
+    console.log(historyData)
+
     const {data, loading, error, refetch} = useQuery(GET_PLANS);
     const [updatePlan, {loading: loadingUpdatePlan, error: ErrorUpdatePlan}] = useMutation(ADD_PLANS);
     const [deletePlan, {loading: loadingDeletePlan, error: ErrorDeletePlan}] = useMutation(DELETE_PLAN);
 
-    const {data: settings, loading: settingsLoading, error: settingsError, refetch: settingsRefeatch} = useQuery(GET_SETTINGS);
+    const {
+        data: settings,
+        loading: settingsLoading,
+        error: settingsError,
+        refetch: settingsRefeatch
+    } = useQuery(GET_SETTINGS);
     const [updateSettings, {loading: loadingUpdateSettings, error: ErrorUpdateSettings}] = useMutation(UPDATE_SETTINGS);
 
     useEffect(() => {
@@ -38,22 +47,48 @@ const Plans = () => {
             soil_humidity: null,
             duration: null,
             light: {
-                start_hour: '10:00',
-                end_hour: '12:00',
-                minimumLevel: 50,
+                start_hour: '8:00',
+                end_hour: '18:00',
+                minimumLevel: null,
             },
         }])
+    }
+
+    const removePlanItem = () => {
+        setCreateList(createList.slice(0, -1))
     }
 
     return (
         <div id={'plans'}>
             <Banner title={'Plany'}/>
             <div className={'container'}>
-                {/*<div className={'title mt-3 mb-3'}>*/}
-                {/*    <span>*/}
-                {/*        <h4 style={{display: 'inline-block'}}>Dane manualne</h4>*/}
-                {/*    </span>*/}
-                {/*</div>*/}
+                <div className={'title mt-3 mb-3'}>
+                    <span>
+                        <h4 style={{display: 'inline-block'}}>Dane manualne</h4>
+                    </span>
+                </div>
+                <div className={'row'}>
+                    <div className={'col-md-2 mb-1'}>
+                        <input type="text" className="form-control" placeholder="Temperatura"/>
+                    </div>
+                    <div className={'col-md-2 mb-1'}>
+                        <input type="text" className="form-control" placeholder="Wilgotność"/>
+                    </div>
+                    <div className={'col-md-2 mb-1'}>
+                        <input type="text" className="form-control" placeholder="Wilgotność gleby"/>
+                    </div>
+                    <div className={'col-md-2 mb-1'}>
+                        <TimePicker start={'9:30'} end={'19:04'}/>
+                    </div>
+                    <div className={'col-md-2 mb-1'}>
+                        <input type="text" className="form-control" placeholder="Poziom oświetlenia"/>
+                    </div>
+                    <div className={'col-md-2 mb-1'}>
+                        <button type="button" className="btn btn-primary" onClick={() => {}}>
+                            Zapisz
+                        </button>
+                    </div>
+                </div>
                 <div className={'title mt-3 mb-3'}>
                     <span>
                         <h4 style={{display: 'inline-block'}}>Zapisane plany</h4>
@@ -79,7 +114,7 @@ const Plans = () => {
                                                     variables: {
                                                         current_plan: plan.id
                                                     }
-                                                }).then(()=>{
+                                                }).then(() => {
                                                     settingsRefeatch()
                                                 })
                                             }}
@@ -127,8 +162,9 @@ const Plans = () => {
                                                 }
                                             </ul>
                                             <div className={'button-wrapper mt-3'}>
-                                                <button type="button" className="btn btn-sm btn-primary">Edytuj</button>
-                                                <button type="button" className="btn btn-sm btn-danger" onClick={()=> deletePlan({variables: {id: plan.id}}).then(()=> refetch())}>Usuń</button>
+                                                <button type="button" className="btn btn-sm btn-danger"
+                                                        onClick={() => deletePlan({variables: {id: plan.id}}).then(() => refetch())}>Usuń
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -136,6 +172,11 @@ const Plans = () => {
                             )
                         })
                     }
+                </div>
+                <div className={'title mt-3 mb-3'}>
+                    <span>
+                        <h4 style={{display: 'inline-block'}}>Historia</h4>
+                    </span>
                 </div>
             </div>
             <Modal
@@ -162,73 +203,81 @@ const Plans = () => {
                             return (
                                 <>
                                     <div className={'row'}>
-                                        <div className={'col-4'}>
-                                            <label className="form-label">Temperatura</label>
-                                            <input type="text" className="form-control" placeholder="24"
-                                                   value={planTemplate.air_temperature}
-                                                   onChange={(e) => {
-                                                       let createListTemp = createList
-                                                       createListTemp[index].air_temperature = parseInt(e.target.value)
-                                                       setCreateList([...createListTemp])
-                                                   }}/>
+                                        <div className={'col-md-4'}>
+                                            <div className="input-group mb-3">
+                                                <div className="input-group-prepend">
+                                                    <span className="input-group-text"
+                                                          style={{height: 50, width: 50}}><FaTemperatureHigh/></span>
+                                                </div>
+                                                <input type="text" className="form-control" placeholder="Temperatura"
+                                                       value={planTemplate.air_temperature}
+                                                       onChange={(e) => {
+                                                           let createListTemp = createList
+                                                           createListTemp[index].air_temperature = parseInt(e.target.value)
+                                                           setCreateList([...createListTemp])
+                                                       }}/>
+                                            </div>
                                         </div>
-                                        <div className={'col-4'}>
-                                            <label className="form-label">Wilgotność powietrza</label>
-                                            <input type="text" className="form-control" placeholder="65"
-                                                   value={planTemplate.air_humidity}
-                                                   onChange={(e) => {
-                                                       let createListTemp = createList
-                                                       createListTemp[index].air_humidity = parseInt(e.target.value)
-                                                       setCreateList([...createListTemp])
-                                                   }}/>
+                                        <div className={'col-md-4'}>
+                                            <div className="input-group mb-3">
+                                                <div className="input-group-prepend">
+                                                    <span className="input-group-text" style={{
+                                                        height: 50,
+                                                        width: 50,
+                                                        fontSize: 24
+                                                    }}><WiHumidity/></span>
+                                                </div>
+                                                <input type="text" className="form-control" placeholder="Wilgotność"
+                                                       value={planTemplate.air_humidity}
+                                                       onChange={(e) => {
+                                                           let createListTemp = createList
+                                                           createListTemp[index].air_humidity = parseInt(e.target.value)
+                                                           setCreateList([...createListTemp])
+                                                       }}/>
+                                            </div>
                                         </div>
-                                        <div className={'col-4'}>
-                                            <label className="form-label">Wilgotność gleby</label>
-                                            <input type="text" className="form-control" placeholder="65"
-                                                   value={planTemplate.soil_humidity}
-                                                   onChange={(e) => {
-                                                       let createListTemp = createList
-                                                       createListTemp[index].soil_humidity = parseInt(e.target.value)
-                                                       setCreateList([...createListTemp])
-                                                   }}/>
-                                        </div>
-                                    </div>
-                                    <div className={'row'}>
-                                        <div className={'col-4'}>
-                                            <label className="form-label">Godzina rozpoczęcia</label>
-                                            <input type="text" className="form-control" placeholder="8:00"
-                                                   value={planTemplate.light.start_hour}
-                                                   onChange={(e) => {
-                                                       let createListTemp = createList
-                                                       createListTemp[index].light.start_hour = e.target.value
-                                                       setCreateList([...createListTemp])
-                                                   }}/>
-                                        </div>
-                                        <div className={'col-4'}>
-                                            <label className="form-label">Godzina zakończenia</label>
-                                            <input type="text" className="form-control" placeholder="20:00"
-                                                   value={planTemplate.light.end_hour}
-                                                   onChange={(e) => {
-                                                       let createListTemp = createList
-                                                       createListTemp[index].light.end_hour = e.target.value
-                                                       setCreateList([...createListTemp])
-                                                   }}/>
-                                        </div>
-                                        <div className={'col-4'}>
-                                            <label className="form-label">Minimalny poziom oświetlenia</label>
-                                            <input type="text" className="form-control" placeholder="50"
-                                                   value={planTemplate.light.minimumLevel}
-                                                   onChange={(e) => {
-                                                       let createListTemp = createList
-                                                       createListTemp[index].light.minimumLevel = parseInt(e.target.value)
-                                                       setCreateList([...createListTemp])
-                                                   }}/>
+                                        <div className={'col-md-4'}>
+                                            <div className="input-group mb-3">
+                                                <div className="input-group-prepend">
+                                                    <span className="input-group-text"
+                                                          style={{height: 50, width: 50}}><GiPlantRoots/></span>
+                                                </div>
+                                                <input type="text" className="form-control"
+                                                       placeholder="Wilgotność gleby"
+                                                       value={planTemplate.soil_humidity}
+                                                       onChange={(e) => {
+                                                           let createListTemp = createList
+                                                           createListTemp[index].soil_humidity = parseInt(e.target.value)
+                                                           setCreateList([...createListTemp])
+                                                       }}/>
+                                            </div>
                                         </div>
                                     </div>
                                     <div className={'row'}>
-                                        <div className={'col-4'}>
-                                            <label className="form-label">Czas trwania</label>
-                                            <input type="text" className="form-control" placeholder="7"
+                                        <div className={'col-md-4'}>
+                                            <div className="input-group mb-3">
+                                                <div className="input-group-prepend">
+                                                    <span className="input-group-text" style={{
+                                                        height: 50,
+                                                        width: 50,
+                                                    }}><BsFillLightbulbFill/></span>
+                                                </div>
+                                                <input type="text" className="form-control"
+                                                       placeholder="Poziom oświetlenia"
+                                                       value={planTemplate.light.minimumLevel}
+                                                       onChange={(e) => {
+                                                           let createListTemp = createList
+                                                           createListTemp[index].light.minimumLevel = parseInt(e.target.value)
+                                                           setCreateList([...createListTemp])
+                                                       }}/>
+                                            </div>
+                                        </div>
+                                        <div className={'col-md-4'}>
+                                            <TimePicker start={'9:30'} end={'19:04'} index={index}
+                                                        setCreateList={setCreateList} createList={createList}/>
+                                        </div>
+                                        <div className={'col-md-4'}>
+                                            <input type="text" className="form-control" placeholder="Czas trwania (dni)"
                                                    value={planTemplate.duration}
                                                    onChange={(e) => {
                                                        let createListTemp = createList
@@ -242,9 +291,18 @@ const Plans = () => {
                             )
                         })
                     }
-                    <button type="button" className="btn btn-sm btn-primary mt-3"
-                            onClick={() => addEmptyPlanItem()}>Dodaj
-                    </button>
+                    <div className={'row'}>
+                        <div className={'col-md-6'}>
+                            <button type="button" className="btn btn-sm btn-primary"
+                                    onClick={() => addEmptyPlanItem()}>Dodaj
+                            </button>
+                        </div>
+                        <div className={'col-md-6'}>
+                            <button type="button" className="btn btn-sm btn-danger"
+                                    onClick={() => removePlanItem()}>Usuń
+                            </button>
+                        </div>
+                    </div>
                 </Modal.Body>
                 <Modal.Footer>
                     <button type="button" className="btn btn-sm btn-primary mt-3"
@@ -255,7 +313,7 @@ const Plans = () => {
                                         name: planName,
                                         schedule: createList,
                                     }
-                                }).then(()=>{
+                                }).then(() => {
                                     refetch()
                                     setModalVisibility(false)
                                     setCreateList([])

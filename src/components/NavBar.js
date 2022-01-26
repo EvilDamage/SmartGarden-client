@@ -2,7 +2,7 @@ import {useState} from "react";
 import {Dropdown, DropdownButton} from 'react-bootstrap';
 
 const NavBar = ({tabKey, setKey}) => {
-    const [userName, setUserName] = useState(localStorage.getItem('user'),)
+    const [userName, setUserName] = useState(localStorage.getItem('user'))
 
     return (
         <div id={'navbar'}>

@@ -7,11 +7,11 @@ import './theme/style.scss';
 import bootstrap from 'bootstrap'
 
 ReactDOM.render(
-        <React.StrictMode>
-            <bootstrap>
-                <App/>
-            </bootstrap>
-        </React.StrictMode>,
+    <React.StrictMode>
+        <bootstrap>
+            <App/>
+        </bootstrap>
+    </React.StrictMode>,
     document.getElementById('root')
 );
 
