@@ -16,24 +16,20 @@ const Home = () => {
 
     const {data, loading, error, refetch} = useQuery(LAST_SENSOR_READS, {notifyOnNetworkStatusChange: true});
     const {data: settings, loading: settingsLoading, error: settingsError} = useQuery(GET_SETTINGS);
+    const {data: plansData, loading: planLoading, error: plansError} = useQuery(GET_PLANS, {
+        variables: {id: settings && settings.settings[0].current_plan}
+    });
 
-    const {
-        data: plansData,
-        loading: planLoading,
-        error: plansError
-    } = useQuery(GET_PLANS, {variables: {id: settings && settings.settings[0].current_plan}});
-
-    useEffect(()=>{
+    useEffect(() => {
         let totalDuration = 0;
-        plansData && plansData.profiles[0].schedule.map((schedule)=>{
+        plansData && plansData.profiles[0].schedule.map((schedule) => {
             totalDuration += schedule.duration
         })
 
         setTotalPlanDuration(totalDuration)
-        setPlanProgress(calculateDaysBetween( new Date(), plansData && plansData.profiles[0].started_at))
+        setPlanProgress(calculateDaysBetween(new Date(), plansData && plansData.profiles[0].started_at))
 
     }, [plansData])
-
 
 
     return (
@@ -166,9 +162,13 @@ const Home = () => {
                                     aria-expanded="false" aria-controls="flush-collapseTwo">
                                 {plansData && plansData.profiles[0].name}
                                 <div className="progress w-50" style={{marginLeft: '1em', marginRight: '0.2em'}}>
-                                    <div className="progress-bar" role="progressbar" style={{width: (planProgress/totalPlanDuration *100) + '%'}} aria-valuenow={planProgress}
-                                         aria-valuemin="0" aria-valuemax={totalPlanDuration}>{planProgress} dni</div>
-                                </div>{totalPlanDuration} dni
+                                    <div className="progress-bar" role="progressbar"
+                                         style={{width: (planProgress / totalPlanDuration * 100) + '%'}}
+                                         aria-valuenow={planProgress}
+                                         aria-valuemin="0" aria-valuemax={totalPlanDuration}>{planProgress} dni
+                                    </div>
+                                </div>
+                                {totalPlanDuration} dni
                             </button>
                         </h2>
                         <div id={'index'} className="accordion-collapse collapse"

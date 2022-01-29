@@ -1,6 +1,6 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {useMutation, useQuery} from "@apollo/client";
-import {GET_USER, LOGIN_USER, RESET_PASSWORD} from "../helpers/gqlQueries";
+import {GET_USER, GET_USERS_COUNT, LOGIN_USER, RESET_PASSWORD} from "../helpers/gqlQueries";
 import {useHistory} from "react-router-dom";
 import {Modal} from 'react-bootstrap';
 
@@ -15,9 +15,6 @@ const Login = () => {
     const [registerAlert, setRegisterAlert] = useState(history.location.state ? history.location.state.registerSuccess : null)
 
     const {data: userData, refetch: userDataRefeach} = useQuery(GET_USER);
-
-    console.log(userData)
-
     const [login, {data, loading, error}] = useMutation(LOGIN_USER);
     const [resetPassword, {
         data: resetPasswordData,
@@ -82,6 +79,9 @@ const Login = () => {
                         </form>
                         <p className={'mt-3'}>Nie pamiętasz hasła? <span className={'password-reminder'}
                                                                          onClick={() => setModalVisibility(true)}>Przypomnij hasło</span>
+                        </p>
+                        <p>Nie masz konta? <span className={'password-reminder'}
+                                                                         onClick={() => history.push('/register')}>Utwórz</span>
                         </p>
                     </div>
                 </div>

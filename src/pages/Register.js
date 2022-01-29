@@ -11,7 +11,6 @@ const Register = () => {
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-    const [modalVisibility, setModalVisibility] = useState(false)
 
     const [register, {data, loading, error}] = useMutation(REGISTER_USER);
 
@@ -64,6 +63,9 @@ const Register = () => {
                                 }
                             </button>
                         </form>
+                        <p className={'mt-3'}>Masz konto? <span className={'password-reminder'}
+                                                 onClick={() => history.push('/login')}>Zaloguj</span>
+                        </p>
                     </div>
                 </div>
                 <div className="col-md-5 carousel-side"/>

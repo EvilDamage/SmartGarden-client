@@ -1,4 +1,4 @@
-import React, {useContext, createContext, useState} from "react";
+import React, {useContext, createContext, useState, useEffect} from "react";
 import {
     BrowserRouter as Router,
     Switch,
@@ -8,7 +8,12 @@ import {
 import Login from "./pages/Login";
 import ContentWrapper from "./components/ContentWrapper";
 import NoMatch from "./pages/NoMatch";
-import {ApolloProvider, ApolloClient, createHttpLink, InMemoryCache, useApolloClient} from "@apollo/client";
+import {
+    ApolloProvider,
+    ApolloClient,
+    createHttpLink,
+    InMemoryCache,
+} from "@apollo/client";
 import {setContext} from "@apollo/client/link/context";
 import Register from "./pages/Register";
 import Stats from "./pages/Stats";
@@ -16,6 +21,7 @@ import Settings from "./pages/Settings";
 import User from "./pages/User";
 import Home from "./pages/Home";
 import Plans from "./pages/Plans";
+import {isAuthenticated} from "./helpers/config";
 
 function App() {
     return (
@@ -43,7 +49,7 @@ function App() {
                     <PrivateRoute exact path="/users">
                         <ContentWrapper><User/></ContentWrapper>
                     </PrivateRoute>
-                    <Route component={NoMatch} />
+                    <Route component={NoMatch}/>
                 </Switch>
             </Router>
         </ProvideAuth>
@@ -55,7 +61,7 @@ function ProvideAuth({children}) {
         uri: 'http://192.168.0.190:4000/graphql',
     });
 
-    const authLink = setContext((_, { headers }) => {
+    const authLink = setContext((_, {headers}) => {
         const token = localStorage.getItem('access_token');
         return {
             headers: {
@@ -78,7 +84,7 @@ function ProvideAuth({children}) {
 }
 
 function PrivateRoute({children, ...rest}) {
-    const client = useApolloClient();
+    const client = isAuthenticated()
 
     return (
         <Route

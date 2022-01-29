@@ -1,11 +1,9 @@
 import {MdOutlineSpaceDashboard} from 'react-icons/md'
-import {AiOutlineBarChart, AiOutlinePoweroff} from 'react-icons/ai'
+import {AiOutlineBarChart} from 'react-icons/ai'
 import {IoSettingsOutline} from 'react-icons/io5'
 import {RiPlantLine} from 'react-icons/ri'
 
-
 const SideBar = () => {
-
     const pathName = window.location.pathname
 
     return (
@@ -18,7 +16,6 @@ const SideBar = () => {
                 <a href={'/plans'} className={pathName === '/plans' && 'active'}><RiPlantLine/></a>
                 <a href={'/stats'} className={pathName === '/stats' && 'active'}><AiOutlineBarChart/></a>
                 <a href={'/settings'} className={pathName === '/settings' && 'active'}><IoSettingsOutline/></a>
-                {/*<span className={'logout'}><AiOutlinePoweroff/></span>*/}
             </div>
         </div>
     )

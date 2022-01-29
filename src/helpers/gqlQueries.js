@@ -49,6 +49,8 @@ query Query {
 }
 `
 
+
+
 export const EDIT_USER = gql`
 mutation Mutation($email: String!, $password: String!, $name: String!) {
   editUser(email: $email, password: $password, name: $name){
@@ -182,6 +184,23 @@ mutation Mutation ($name: String!, $schedule: [ScheduleInput!]!){
             minimumLevel
         }
         duration
+    }
+    created_at
+    updated_at
+  }
+}
+`
+
+export const ADD_MANUAL_PLAN = gql`
+mutation Mutation ($air_humidity: Int!, $soil_humidity: Int!, $air_temperature: Int!, $light: LightTimetableInput!){
+  addManualProfile (air_humidity: $air_humidity, soil_humidity: $soil_humidity, air_temperature: $air_temperature, light: $light){
+    air_humidity
+    soil_humidity
+    air_temperature
+    light {
+        start_hour
+        end_hour
+        minimumLevel
     }
     created_at
     updated_at

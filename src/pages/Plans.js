@@ -1,6 +1,7 @@
 import Banner from "../components/Banner";
 import {useMutation, useQuery} from "@apollo/client";
 import {
+    ADD_MANUAL_PLAN,
     ADD_PLANS,
     CURRENT_SENSOR_READS,
     DELETE_PLAN,
@@ -17,17 +18,29 @@ import TimePicker from "../components/TimePicker";
 
 const Plans = () => {
     const [modalVisibility, setModalVisibility] = useState(false)
-
     const [planName, setPlanName] = useState('')
     const [createList, setCreateList] = useState([])
 
-    const {data: historyData} = useQuery(HISTORY)
-    console.log(historyData)
+    const [manualPlan, setManualPlan] = useState({
+        air_temperature: null,
+        air_humidity: null,
+        soil_humidity: null,
+        duration: null,
+        light: {
+            start_hour: '8:00',
+            end_hour: '18:00',
+            minimumLevel: null,
+        }
+    })
 
+    const {data: historyData} = useQuery(HISTORY)
     const {data, loading, error, refetch} = useQuery(GET_PLANS);
     const [updatePlan, {loading: loadingUpdatePlan, error: ErrorUpdatePlan}] = useMutation(ADD_PLANS);
+    const [updateManualPlan, {
+        loading: loadingUpdateManualPlan,
+        error: ErrorUpdateManualPlan
+    }] = useMutation(ADD_MANUAL_PLAN);
     const [deletePlan, {loading: loadingDeletePlan, error: ErrorDeletePlan}] = useMutation(DELETE_PLAN);
-
     const {
         data: settings,
         loading: settingsLoading,
@@ -69,30 +82,55 @@ const Plans = () => {
                 </div>
                 <div className={'row'}>
                     <div className={'col-md-2 mb-1'}>
-                        <input type="text" className="form-control" placeholder="Temperatura"/>
+                        <input type="text" className="form-control" placeholder="Temperatura" onChange={(e) => {
+                            let userManualPlan = manualPlan
+                            userManualPlan.air_temperature = parseInt(e.target.value)
+                            setManualPlan(userManualPlan)
+                        }}/>
                     </div>
                     <div className={'col-md-2 mb-1'}>
-                        <input type="text" className="form-control" placeholder="Wilgotność"/>
+                        <input type="text" className="form-control" placeholder="Wilgotność" onChange={(e) => {
+                            let userManualPlan = manualPlan
+                            userManualPlan.air_humidity = parseInt(e.target.value)
+                            setManualPlan(userManualPlan)
+                        }}/>
                     </div>
                     <div className={'col-md-2 mb-1'}>
-                        <input type="text" className="form-control" placeholder="Wilgotność gleby"/>
+                        <input type="text" className="form-control" placeholder="Wilgotność gleby" onChange={(e) => {
+                            let userManualPlan = manualPlan
+                            userManualPlan.soil_humidity = parseInt(e.target.value)
+                            setManualPlan(userManualPlan)
+                        }}/>
                     </div>
                     <div className={'col-md-2 mb-1'}>
-                        <TimePicker start={'9:30'} end={'19:04'}/>
+                        <TimePicker start={'8:00'} end={'19:00'}/>
                     </div>
                     <div className={'col-md-2 mb-1'}>
-                        <input type="text" className="form-control" placeholder="Poziom oświetlenia"/>
+                        <input type="text" className="form-control" placeholder="Poziom oświetlenia" onChange={(e) => {
+                            let userManualPlan = manualPlan
+                            userManualPlan.light.minimumLevel = parseInt(e.target.value)
+                            setManualPlan(userManualPlan)
+                        }}/>
                     </div>
                     <div className={'col-md-2 mb-1'}>
-                        <button type="button" className="btn btn-primary" onClick={() => {}}>
+                        <button type="button" className="btn btn-primary" onClick={() => {
+                            updateManualPlan({
+                                variables: {
+                                    air_humidity: manualPlan.soil_humidity,
+                                    soil_humidity: manualPlan.soil_humidity,
+                                    air_temperature: manualPlan.air_temperature,
+                                    light: manualPlan.light
+                                }
+                            })
+                        }}>
                             Zapisz
                         </button>
                     </div>
                 </div>
                 <div className={'title mt-3 mb-3'}>
-                    <span>
-                        <h4 style={{display: 'inline-block'}}>Zapisane plany</h4>
-                    </span>
+                            <span>
+                            <h4 style={{display: 'inline-block'}}>Zapisane plany</h4>
+                            </span>
                     <button type="button" className="btn btn-sm btn-primary" style={{width: "12em"}} onClick={() => {
                         setModalVisibility(true)
                     }}>Stwórz plan
@@ -135,25 +173,25 @@ const Plans = () => {
                                                     plan.schedule.map((schedule) => {
                                                         return (
                                                             <li className="list-group-item d-flex justify-content-between align-items-start">
-                                                            <span>
-                                                                <FaTemperatureHigh/><span style={{
-                                                                marginLeft: '0.5em',
-                                                                marginRight: '1em'
-                                                            }}>{schedule.air_temperature}</span>
-                                                                <WiHumidity/><span style={{
-                                                                marginLeft: '0.5em',
-                                                                marginRight: '1em'
-                                                            }}>{schedule.air_humidity}%</span>
-                                                                <GiPlantRoots/><span style={{
-                                                                marginLeft: '0.5em',
-                                                                marginRight: '1em'
-                                                            }}>{schedule.soil_humidity}%</span>
-                                                                <BsFillLightbulbFill/><span style={{
-                                                                marginLeft: '0.5em',
-                                                                marginRight: '1em'
-                                                            }}>{schedule.light.start_hour}-{schedule.light.end_hour}</span>
+                            <span>
+                            <FaTemperatureHigh/><span style={{
+                                marginLeft: '0.5em',
+                                marginRight: '1em'
+                            }}>{schedule.air_temperature}</span>
+                            <WiHumidity/><span style={{
+                                marginLeft: '0.5em',
+                                marginRight: '1em'
+                            }}>{schedule.air_humidity}%</span>
+                            <GiPlantRoots/><span style={{
+                                marginLeft: '0.5em',
+                                marginRight: '1em'
+                            }}>{schedule.soil_humidity}%</span>
+                            <BsFillLightbulbFill/><span style={{
+                                marginLeft: '0.5em',
+                                marginRight: '1em'
+                            }}>{schedule.light.start_hour}-{schedule.light.end_hour}</span>
 
-                                                            </span>
+                            </span>
                                                                 <span
                                                                     className="small">{schedule.duration} dni</span>
                                                             </li>
@@ -174,9 +212,9 @@ const Plans = () => {
                     }
                 </div>
                 <div className={'title mt-3 mb-3'}>
-                    <span>
-                        <h4 style={{display: 'inline-block'}}>Historia</h4>
-                    </span>
+                            <span>
+                            <h4 style={{display: 'inline-block'}}>Historia</h4>
+                            </span>
                 </div>
             </div>
             <Modal
@@ -206,8 +244,8 @@ const Plans = () => {
                                         <div className={'col-md-4'}>
                                             <div className="input-group mb-3">
                                                 <div className="input-group-prepend">
-                                                    <span className="input-group-text"
-                                                          style={{height: 50, width: 50}}><FaTemperatureHigh/></span>
+                            <span className="input-group-text"
+                                  style={{height: 50, width: 50}}><FaTemperatureHigh/></span>
                                                 </div>
                                                 <input type="text" className="form-control" placeholder="Temperatura"
                                                        value={planTemplate.air_temperature}
@@ -221,11 +259,11 @@ const Plans = () => {
                                         <div className={'col-md-4'}>
                                             <div className="input-group mb-3">
                                                 <div className="input-group-prepend">
-                                                    <span className="input-group-text" style={{
-                                                        height: 50,
-                                                        width: 50,
-                                                        fontSize: 24
-                                                    }}><WiHumidity/></span>
+                            <span className="input-group-text" style={{
+                                height: 50,
+                                width: 50,
+                                fontSize: 24
+                            }}><WiHumidity/></span>
                                                 </div>
                                                 <input type="text" className="form-control" placeholder="Wilgotność"
                                                        value={planTemplate.air_humidity}
@@ -239,8 +277,8 @@ const Plans = () => {
                                         <div className={'col-md-4'}>
                                             <div className="input-group mb-3">
                                                 <div className="input-group-prepend">
-                                                    <span className="input-group-text"
-                                                          style={{height: 50, width: 50}}><GiPlantRoots/></span>
+                            <span className="input-group-text"
+                                  style={{height: 50, width: 50}}><GiPlantRoots/></span>
                                                 </div>
                                                 <input type="text" className="form-control"
                                                        placeholder="Wilgotność gleby"
@@ -257,10 +295,10 @@ const Plans = () => {
                                         <div className={'col-md-4'}>
                                             <div className="input-group mb-3">
                                                 <div className="input-group-prepend">
-                                                    <span className="input-group-text" style={{
-                                                        height: 50,
-                                                        width: 50,
-                                                    }}><BsFillLightbulbFill/></span>
+                            <span className="input-group-text" style={{
+                                height: 50,
+                                width: 50,
+                            }}><BsFillLightbulbFill/></span>
                                                 </div>
                                                 <input type="text" className="form-control"
                                                        placeholder="Poziom oświetlenia"
@@ -273,7 +311,7 @@ const Plans = () => {
                                             </div>
                                         </div>
                                         <div className={'col-md-4'}>
-                                            <TimePicker start={'9:30'} end={'19:04'} index={index}
+                                            <TimePicker start={'8:00'} end={'19:00'} index={index}
                                                         setCreateList={setCreateList} createList={createList}/>
                                         </div>
                                         <div className={'col-md-4'}>
