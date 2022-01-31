@@ -11,8 +11,6 @@ const History = () => {
 
     const {data, loading} = useQuery(HISTORY, {variables: {limit: limit, offset: offset}})
 
-    console.log(historyData)
-
     useEffect(()=>{
         if(data){
             setHistoryData(data)

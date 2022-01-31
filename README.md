@@ -23,6 +23,7 @@ Po skonowaniu rezpoytorium należy zainstalować node_modules
     
 ## Podgląd 
 
+![PREVIEW](./docs/preview.gif)
 
 ## Opis Aplikacji
 
