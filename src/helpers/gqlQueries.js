@@ -76,9 +76,13 @@ mutation Mutation($id: ID!) {
 export const HISTORY = gql`
 query Query ($offset: Int, $limit: Int){
   history(offset: $offset, limit: $limit){
-    id
-    comment
-    created_at
+    totalLength
+    hasMore
+    history{
+        id
+        comment
+        created_at
+    }
   }
 }
 `

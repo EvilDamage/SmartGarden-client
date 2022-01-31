@@ -50,7 +50,7 @@ const User = () => {
                                             })
                                         }
                                     }}>
-                                {!loadingAddUser ? 'Zapisz' :
+                                {!loadingEditUser ? 'Zapisz' :
                                     <div className="spinner-border spinner-border-sm" role="status">
                                         <span className="visually-hidden">Loading...</span>
                                     </div>

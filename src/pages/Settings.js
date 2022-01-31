@@ -1,4 +1,4 @@
-import {Button, Form} from "react-bootstrap";
+import {Button, Form, Spinner} from "react-bootstrap";
 import {useMutation, useQuery} from "@apollo/client";
 import {DELETE_USER, GET_SETTINGS, UPDATE_SETTINGS} from "../helpers/gqlQueries";
 import Banner from "../components/Banner";
@@ -30,24 +30,30 @@ const Settings = () => {
         <>
             <Banner title={'Ustawienia'}/>
             <div className={'container mt-3'}>
-                <Form>
-                    <label className="form-label">Tryb pracy</label>
-                    <Form.Select className={'w-25'} value={mode} onChange={(e) => setMode(e.target.value)}>
-                        <option value="manual">Manual</option>
-                        <option value="plan">Plan</option>
-                        <option value="off">Off</option>
-                    </Form.Select>
-                    <label className="form-label mt-3">Interwał odczytów (min)</label>
-                    <Form.Select className={'w-25'} value={interval} onChange={(e) => setInterval(e.target.value)}>
-                        <option value="1">1</option>
-                        <option value="5">5</option>
-                        <option value="10">10</option>
-                        <option value="30">30</option>
-                        <option value="60">60</option>
-                        <option value="120">120</option>
-                    </Form.Select>
-                    {
-                        data &&
+                {loading &&
+                <div className={'mt-3'} style={{textAlign: 'center'}}>
+                    <Spinner animation="border" variant="primary" className={'spinner'} style={{height: '6em', width: '6em'}}/>
+                    <p>Ładowanie</p>
+                </div>
+                }
+                {data &&
+                <>
+                    <Form>
+                        <label className="form-label">Tryb pracy</label>
+                        <Form.Select className={'w-25'} value={mode} onChange={(e) => setMode(e.target.value)}>
+                            <option value="manual">Manual</option>
+                            <option value="plan">Plan</option>
+                            <option value="off">Off</option>
+                        </Form.Select>
+                        <label className="form-label mt-3">Interwał odczytów (min)</label>
+                        <Form.Select className={'w-25'} value={interval} onChange={(e) => setInterval(e.target.value)}>
+                            <option value="1">1</option>
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="30">30</option>
+                            <option value="60">60</option>
+                            <option value="120">120</option>
+                        </Form.Select>
                         <div className={'mt-3'}>
                             <Form.Check
                                 type="switch"
@@ -74,27 +80,29 @@ const Settings = () => {
                                 label="Wentylacja"
                             />
                         </div>
-                    }
-                    <button type="button" className="btn btn-primary w-25 mt-3"
-                            onClick={() => {
-                                updateSettings({
-                                    variables: {
-                                        mode: mode,
-                                        interval: parseInt(interval),
-                                        pump: pump,
-                                        pump_fertilizer: pumpFertilizer,
-                                        light: light,
-                                        fan: fan
-                                    }
-                                })
-                            }}>
-                        {!loadingUpdateSettings ? 'Zapisz' :
-                            <div className="spinner-border spinner-border-sm" role="status">
-                                <span className="visually-hidden">Loading...</span>
-                            </div>
-                        }
-                    </button>
-                </Form>
+                        <button type="button" className="btn btn-primary w-25 mt-3"
+                                onClick={() => {
+                                    updateSettings({
+                                        variables: {
+                                            mode: mode,
+                                            interval: parseInt(interval),
+                                            pump: pump,
+                                            pump_fertilizer: pumpFertilizer,
+                                            light: light,
+                                            fan: fan
+                                        }
+                                    })
+                                }}>
+                            {!loadingUpdateSettings ? 'Zapisz' :
+                                <div className="spinner-border spinner-border-sm" role="status">
+                                    <span className="visually-hidden">Loading...</span>
+                                </div>
+                            }
+                        </button>
+                    </Form>
+                </>
+                }
+
             </div>
         </>
     )
