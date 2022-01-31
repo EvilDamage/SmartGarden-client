@@ -3,18 +3,17 @@ import {useMutation, useQuery} from "@apollo/client";
 import {
     ADD_MANUAL_PLAN,
     ADD_PLANS,
-    CURRENT_SENSOR_READS,
     DELETE_PLAN,
     GET_PLANS,
     GET_SETTINGS, HISTORY,
     UPDATE_SETTINGS
 } from "../helpers/gqlQueries";
-import {FiUserMinus} from "react-icons/fi";
 import React, {useEffect, useState} from "react";
 import {BsFillLightbulbFill, FaTemperatureHigh, GiPlantRoots, WiHumidity} from "react-icons/all";
 import {formatDateForDisplay} from "../helpers/dataParse";
 import {Form, Modal} from "react-bootstrap";
 import TimePicker from "../components/TimePicker";
+import History from "../components/History";
 
 const Plans = () => {
     const [modalVisibility, setModalVisibility] = useState(false)
@@ -33,7 +32,6 @@ const Plans = () => {
         }
     })
 
-    const {data: historyData} = useQuery(HISTORY)
     const {data, loading, error, refetch} = useQuery(GET_PLANS);
     const [updatePlan, {loading: loadingUpdatePlan, error: ErrorUpdatePlan}] = useMutation(ADD_PLANS);
     const [updateManualPlan, {
@@ -211,11 +209,7 @@ const Plans = () => {
                         })
                     }
                 </div>
-                <div className={'title mt-3 mb-3'}>
-                            <span>
-                            <h4 style={{display: 'inline-block'}}>Historia</h4>
-                            </span>
-                </div>
+                <History/>
             </div>
             <Modal
                 show={modalVisibility}
