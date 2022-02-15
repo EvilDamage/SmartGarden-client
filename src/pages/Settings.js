@@ -17,12 +17,12 @@ const Settings = () => {
 
     useEffect(() => {
         if (data) {
-            setPump(data.settings[0].pump)
-            setPumpFertilizer(data.settings[0].pump_fertilizer)
-            setLight(data.settings[0].light)
-            setFan(data.settings[0].fan)
-            setInterval(data.settings[0].interval)
-            setMode(data.settings[0].mode)
+            setPump(data.settings.pump)
+            setPumpFertilizer(data.settings.pump_fertilizer)
+            setLight(data.settings.light)
+            setFan(data.settings.fan)
+            setInterval(data.settings.interval)
+            setMode(data.settings.mode)
         }
     }, [data])
 

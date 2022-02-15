@@ -5,35 +5,37 @@ import {
     ADD_PLANS,
     DELETE_PLAN,
     GET_PLANS,
-    GET_SETTINGS, HISTORY,
+    GET_SETTINGS, HISTORY, MANUAL_PLAN,
     UPDATE_SETTINGS
 } from "../helpers/gqlQueries";
 import React, {useEffect, useState} from "react";
 import {BsFillLightbulbFill, FaTemperatureHigh, GiPlantRoots, WiHumidity} from "react-icons/all";
 import {formatDateForDisplay} from "../helpers/dataParse";
-import {Form, Modal} from "react-bootstrap";
+import {Form as BootstrapForm, Modal, Spinner} from "react-bootstrap";
 import TimePicker from "../components/TimePicker";
 import History from "../components/History";
+
+import {Formik, Field, Form} from 'formik';
 
 const Plans = () => {
     const [modalVisibility, setModalVisibility] = useState(false)
     const [planName, setPlanName] = useState('')
     const [createList, setCreateList] = useState([])
 
-    const [manualPlan, setManualPlan] = useState({
-        air_temperature: null,
-        air_humidity: null,
-        soil_humidity: null,
-        duration: null,
-        light: {
-            start_hour: '8:00',
-            end_hour: '18:00',
-            minimumLevel: null,
-        }
-    })
+    // const [manualPlan, setManualPlan] = useState({
+    //     air_temperature: null,
+    //     air_humidity: null,
+    //     soil_humidity: null,
+    //     light: {
+    //         start_hour: null,
+    //         end_hour: null,
+    //         minimumLevel: null,
+    //     }
+    // })
 
     const {data, loading, error, refetch} = useQuery(GET_PLANS);
     const [updatePlan, {loading: loadingUpdatePlan, error: ErrorUpdatePlan}] = useMutation(ADD_PLANS);
+    const {data: manualPlanData, loading: loadingManualPlan, error: ErrorManualPlan} = useQuery(MANUAL_PLAN);
     const [updateManualPlan, {
         loading: loadingUpdateManualPlan,
         error: ErrorUpdateManualPlan
@@ -78,53 +80,76 @@ const Plans = () => {
                         <h4 style={{display: 'inline-block'}}>Dane manualne</h4>
                     </span>
                 </div>
-                <div className={'row'}>
-                    <div className={'col-md-2 mb-1'}>
-                        <input type="text" className="form-control" placeholder="Temperatura" onChange={(e) => {
-                            let userManualPlan = manualPlan
-                            userManualPlan.air_temperature = parseInt(e.target.value)
-                            setManualPlan(userManualPlan)
-                        }}/>
-                    </div>
-                    <div className={'col-md-2 mb-1'}>
-                        <input type="text" className="form-control" placeholder="Wilgotność" onChange={(e) => {
-                            let userManualPlan = manualPlan
-                            userManualPlan.air_humidity = parseInt(e.target.value)
-                            setManualPlan(userManualPlan)
-                        }}/>
-                    </div>
-                    <div className={'col-md-2 mb-1'}>
-                        <input type="text" className="form-control" placeholder="Wilgotność gleby" onChange={(e) => {
-                            let userManualPlan = manualPlan
-                            userManualPlan.soil_humidity = parseInt(e.target.value)
-                            setManualPlan(userManualPlan)
-                        }}/>
-                    </div>
-                    <div className={'col-md-2 mb-1'}>
-                        <TimePicker start={'8:00'} end={'19:00'}/>
-                    </div>
-                    <div className={'col-md-2 mb-1'}>
-                        <input type="text" className="form-control" placeholder="Poziom oświetlenia" onChange={(e) => {
-                            let userManualPlan = manualPlan
-                            userManualPlan.light.minimumLevel = parseInt(e.target.value)
-                            setManualPlan(userManualPlan)
-                        }}/>
-                    </div>
-                    <div className={'col-md-2 mb-1'}>
-                        <button type="button" className="btn btn-primary" onClick={() => {
-                            updateManualPlan({
-                                variables: {
-                                    air_humidity: manualPlan.soil_humidity,
-                                    soil_humidity: manualPlan.soil_humidity,
-                                    air_temperature: manualPlan.air_temperature,
-                                    light: manualPlan.light
-                                }
-                            })
-                        }}>
-                            Zapisz
-                        </button>
-                    </div>
-                </div>
+                {manualPlanData &&
+                <Formik
+                    initialValues={{
+                        air_temperature: manualPlanData.manualProfile.air_temperature || 0,
+                        air_humidity: manualPlanData.manualProfile.air_humidity || 0,
+                        soil_humidity: manualPlanData.manualProfile.soil_humidity || 0,
+                        light: {
+                            start_hour: manualPlanData.manualProfile.light.start_hour || '8:00',
+                            end_hour: manualPlanData.manualProfile.light.end_hour || '18:00',
+                            minimumLevel: manualPlanData.manualProfile.light.minimumLevel || 0,
+                        }
+                    }}
+                    onSubmit={(values) => {
+                        updateManualPlan({
+                            variables: {
+                                air_humidity: values.air_humidity,
+                                soil_humidity: values.soil_humidity,
+                                air_temperature: values.air_temperature,
+                                light: values.light
+                            }
+                        })
+                    }}
+                >
+                    <Form>
+                        <div className={'row'}>
+                            <div className={'col-md-4 col-lg-2 mb-1'}>
+                                <Field id={"air_temperature"} name={"air_temperature"} type="number"
+                                       className="form-control" placeholder="Temperatura"
+                                />
+                            </div>
+                            <div className={'col-md-4 col-lg-2 mb-1'}>
+                                <Field id={"air_humidity"} name={"air_humidity"} type="number"
+                                       className="form-control" placeholder="Wilgotność"
+                                />
+                            </div>
+                            <div className={'col-md-4 col-lg-2 mb-1'}>
+                                <Field id={"soil_humidity"} name={"soil_humidity"} type="number"
+                                       className="form-control" placeholder="Wilgotność gleby"
+                                />
+                            </div>
+                            <div className={'col-md-4 col-lg-2 mb-1'}>
+                                <Field name={'light'}>
+                                    {({ field, form, meta }) => {
+                                        const setupTimeCallback = (start, end) =>{
+                                            field.value.start_hour = start
+                                            field.value.end_hour = end
+                                        }
+                                        return (<div>
+                                            <TimePicker {...field} start={field.value.start_hour}
+                                                        end={field.value.end_hour} setupTime={setupTimeCallback}/>
+                                        </div>)
+                                    }}
+                                </Field>
+                            </div>
+                            <div className={'col-md-4 col-lg-2 mb-1'}>
+                                <Field id={"light.minimumLevel"} name={"light.minimumLevel"} type="number"
+                                       className="form-control" placeholder="Poziom oświetlenia"
+                                />
+                            </div>
+                            <div className={'col-md-4 col-lg-2 mb-1'}>
+                                <button type="submit" className="btn btn-primary" disabled={loadingUpdateManualPlan}>
+                                    {!loadingUpdateManualPlan ? 'Zapisz' : <div className="spinner-border spinner-border-sm" role="status">
+                                        <span className="visually-hidden">Loading...</span>
+                                    </div>}
+                                </button>
+                            </div>
+                        </div>
+                    </Form>
+                </Formik>
+                }
                 <div className={'title mt-3 mb-3'}>
                             <span>
                             <h4 style={{display: 'inline-block'}}>Zapisane plany</h4>
@@ -138,14 +163,13 @@ const Plans = () => {
                     {
                         data && data.profiles.map((plan, index) => {
                             return (
-                                <div className="accordion-item">
+                                <div key={index} className="accordion-item">
                                     <h2 className="accordion-header" id="flush-headingOne">
-                                        <Form.Check
+                                        <BootstrapForm.Check
                                             style={{position: 'absolute', zIndex: 100, marginLeft: 15}}
                                             type="radio"
-                                            checked={settings && settings.settings[0].current_plan === plan.id}
-                                            onClick={() => {
-                                                console.log('asdasd')
+                                            checked={settings && settings.settings.current_plan === plan.id}
+                                            onChange={() => {
                                                 updateSettings({
                                                     variables: {
                                                         current_plan: plan.id
@@ -168,9 +192,10 @@ const Plans = () => {
                                         <div className="accordion-body">
                                             <ul className="list-group">
                                                 {
-                                                    plan.schedule.map((schedule) => {
+                                                    plan.schedule.map((schedule, index) => {
                                                         return (
-                                                            <li className="list-group-item d-flex justify-content-between align-items-start">
+                                                            <li key={index}
+                                                                className="list-group-item d-flex justify-content-between align-items-start">
                             <span>
                             <FaTemperatureHigh/><span style={{
                                 marginLeft: '0.5em',
@@ -233,13 +258,13 @@ const Plans = () => {
                     {
                         createList.map((planTemplate, index) => {
                             return (
-                                <>
+                                <div key={index}>
                                     <div className={'row'}>
                                         <div className={'col-md-4'}>
                                             <div className="input-group mb-3">
                                                 <div className="input-group-prepend">
-                            <span className="input-group-text"
-                                  style={{height: 50, width: 50}}><FaTemperatureHigh/></span>
+                                                    <span className="input-group-text"
+                                                          style={{height: 50, width: 50}}><FaTemperatureHigh/></span>
                                                 </div>
                                                 <input type="text" className="form-control" placeholder="Temperatura"
                                                        value={planTemplate.air_temperature}
@@ -253,11 +278,11 @@ const Plans = () => {
                                         <div className={'col-md-4'}>
                                             <div className="input-group mb-3">
                                                 <div className="input-group-prepend">
-                            <span className="input-group-text" style={{
-                                height: 50,
-                                width: 50,
-                                fontSize: 24
-                            }}><WiHumidity/></span>
+                                                    <span className="input-group-text" style={{
+                                                        height: 50,
+                                                        width: 50,
+                                                        fontSize: 24
+                                                    }}><WiHumidity/></span>
                                                 </div>
                                                 <input type="text" className="form-control" placeholder="Wilgotność"
                                                        value={planTemplate.air_humidity}
@@ -271,8 +296,8 @@ const Plans = () => {
                                         <div className={'col-md-4'}>
                                             <div className="input-group mb-3">
                                                 <div className="input-group-prepend">
-                            <span className="input-group-text"
-                                  style={{height: 50, width: 50}}><GiPlantRoots/></span>
+                                                    <span className="input-group-text"
+                                                          style={{height: 50, width: 50}}><GiPlantRoots/></span>
                                                 </div>
                                                 <input type="text" className="form-control"
                                                        placeholder="Wilgotność gleby"
@@ -289,10 +314,10 @@ const Plans = () => {
                                         <div className={'col-md-4'}>
                                             <div className="input-group mb-3">
                                                 <div className="input-group-prepend">
-                            <span className="input-group-text" style={{
-                                height: 50,
-                                width: 50,
-                            }}><BsFillLightbulbFill/></span>
+                                                    <span className="input-group-text" style={{
+                                                        height: 50,
+                                                        width: 50,
+                                                    }}><BsFillLightbulbFill/></span>
                                                 </div>
                                                 <input type="text" className="form-control"
                                                        placeholder="Poziom oświetlenia"
@@ -319,7 +344,7 @@ const Plans = () => {
                                         </div>
                                     </div>
                                     <hr className={'mt-3'}/>
-                                </>
+                                </div>
                             )
                         })
                     }

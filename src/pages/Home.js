@@ -17,7 +17,7 @@ const Home = () => {
     const {data, loading, error, refetch} = useQuery(LAST_SENSOR_READS, {notifyOnNetworkStatusChange: true});
     const {data: settings, loading: settingsLoading, error: settingsError} = useQuery(GET_SETTINGS);
     const {data: plansData, loading: planLoading, error: plansError} = useQuery(GET_PLANS, {
-        variables: {id: settings && settings.settings[0].current_plan}
+        variables: {id: settings && settings.settings.current_plan}
     });
 
     useEffect(() => {
@@ -68,7 +68,7 @@ const Home = () => {
                                 <div className={'progress-circle'}>
                                     <CircularProgressbar
                                         value={data && data.lastSensorsReading.air_humidity}
-                                        text={`${data && data.lastSensorsReading.air_humidity}%`}/>
+                                        text={`${data && data.lastSensorsReading.air_humidity.toFixed(2)}%`}/>
                                 </div>
                                 :
                                 <Spinner animation="border" variant="primary" className={'spinner'}/>
@@ -143,18 +143,18 @@ const Home = () => {
                     <span>
                         <h4 style={{display: 'inline-block'}}>Wybrany plan</h4>
                         {
-                            settings && settings.settings[0].mode === "manual" &&
+                            settings && settings.settings.mode === "manual" &&
                             <p>System działa w trybie manualnym</p>
                         }
                         {
-                            settings && !settings.settings[0].current_plan &&
+                            settings && !settings.settings.current_plan &&
                             <p>Nie wybrano planu</p>
 
                         }
                     </span>
                 </div>
                 {
-                    settings && settings.settings[0].mode === "plan" &&
+                    settings && settings.settings.mode === "plan" &&
                     <div className="accordion-item w-100">
                         <h2 className="accordion-header" id="flush-headingOne">
                             <button className="accordion-button collapsed button-title" type="button"

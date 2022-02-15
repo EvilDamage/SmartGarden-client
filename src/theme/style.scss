@@ -389,7 +389,7 @@ $secondary: #519259;
 
 // Overwritten
 
-input[type=text], input[type=password], input[type=email] {
+input[type=text], input[type=number], input[type=password], input[type=email]{
   min-height: 48px;
   margin-bottom: 0px;
   padding-top: 12px;

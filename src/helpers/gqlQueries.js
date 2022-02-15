@@ -195,6 +195,23 @@ mutation Mutation ($name: String!, $schedule: [ScheduleInput!]!){
 }
 `
 
+export const MANUAL_PLAN = gql`
+query Query{
+  manualProfile{
+    air_humidity
+    soil_humidity
+    air_temperature
+    light {
+        start_hour
+        end_hour
+        minimumLevel
+    }
+    created_at
+    updated_at
+  }
+}
+`
+
 export const ADD_MANUAL_PLAN = gql`
 mutation Mutation ($air_humidity: Int!, $soil_humidity: Int!, $air_temperature: Int!, $light: LightTimetableInput!){
   addManualProfile (air_humidity: $air_humidity, soil_humidity: $soil_humidity, air_temperature: $air_temperature, light: $light){
