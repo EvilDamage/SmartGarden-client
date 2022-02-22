@@ -99,8 +99,8 @@ const History = () => {
                             <h4 style={{display: 'inline-block'}}>Historia</h4>
                         </span>
             </div>
-            {historyData &&
-            <div>
+            {historyData ?
+            <div className={'table-responsive'}>
                 <table className="table table-hover">
                     <thead>
                     <tr>
@@ -123,7 +123,8 @@ const History = () => {
                 </table>
                 {generatePagination(historyData.history.totalLength, offset, limit)}
             </div>
-
+            :
+                <div>Brak wyników</div>
             }
         </>
     )

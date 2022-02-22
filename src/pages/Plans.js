@@ -14,32 +14,15 @@ import {formatDateForDisplay} from "../helpers/dataParse";
 import {Form as BootstrapForm, Modal, Spinner} from "react-bootstrap";
 import TimePicker from "../components/TimePicker";
 import History from "../components/History";
-
-import {Formik, Field, Form} from 'formik';
+import ManualPlan from "../components/ManualPlan";
 
 const Plans = () => {
     const [modalVisibility, setModalVisibility] = useState(false)
     const [planName, setPlanName] = useState('')
     const [createList, setCreateList] = useState([])
 
-    // const [manualPlan, setManualPlan] = useState({
-    //     air_temperature: null,
-    //     air_humidity: null,
-    //     soil_humidity: null,
-    //     light: {
-    //         start_hour: null,
-    //         end_hour: null,
-    //         minimumLevel: null,
-    //     }
-    // })
-
     const {data, loading, error, refetch} = useQuery(GET_PLANS);
     const [updatePlan, {loading: loadingUpdatePlan, error: ErrorUpdatePlan}] = useMutation(ADD_PLANS);
-    const {data: manualPlanData, loading: loadingManualPlan, error: ErrorManualPlan} = useQuery(MANUAL_PLAN);
-    const [updateManualPlan, {
-        loading: loadingUpdateManualPlan,
-        error: ErrorUpdateManualPlan
-    }] = useMutation(ADD_MANUAL_PLAN);
     const [deletePlan, {loading: loadingDeletePlan, error: ErrorDeletePlan}] = useMutation(DELETE_PLAN);
     const {
         data: settings,
@@ -75,81 +58,7 @@ const Plans = () => {
         <div id={'plans'}>
             <Banner title={'Plany'}/>
             <div className={'container'}>
-                <div className={'title mt-3 mb-3'}>
-                    <span>
-                        <h4 style={{display: 'inline-block'}}>Dane manualne</h4>
-                    </span>
-                </div>
-                {manualPlanData &&
-                <Formik
-                    initialValues={{
-                        air_temperature: manualPlanData.manualProfile.air_temperature || 0,
-                        air_humidity: manualPlanData.manualProfile.air_humidity || 0,
-                        soil_humidity: manualPlanData.manualProfile.soil_humidity || 0,
-                        light: {
-                            start_hour: manualPlanData.manualProfile.light.start_hour || '8:00',
-                            end_hour: manualPlanData.manualProfile.light.end_hour || '18:00',
-                            minimumLevel: manualPlanData.manualProfile.light.minimumLevel || 0,
-                        }
-                    }}
-                    onSubmit={(values) => {
-                        updateManualPlan({
-                            variables: {
-                                air_humidity: values.air_humidity,
-                                soil_humidity: values.soil_humidity,
-                                air_temperature: values.air_temperature,
-                                light: values.light
-                            }
-                        })
-                    }}
-                >
-                    <Form>
-                        <div className={'row'}>
-                            <div className={'col-md-4 col-lg-2 mb-1'}>
-                                <Field id={"air_temperature"} name={"air_temperature"} type="number"
-                                       className="form-control" placeholder="Temperatura"
-                                />
-                            </div>
-                            <div className={'col-md-4 col-lg-2 mb-1'}>
-                                <Field id={"air_humidity"} name={"air_humidity"} type="number"
-                                       className="form-control" placeholder="Wilgotność"
-                                />
-                            </div>
-                            <div className={'col-md-4 col-lg-2 mb-1'}>
-                                <Field id={"soil_humidity"} name={"soil_humidity"} type="number"
-                                       className="form-control" placeholder="Wilgotność gleby"
-                                />
-                            </div>
-                            <div className={'col-md-4 col-lg-2 mb-1'}>
-                                <Field name={'light'}>
-                                    {({ field, form, meta }) => {
-                                        const setupTimeCallback = (start, end) =>{
-                                            field.value.start_hour = start
-                                            field.value.end_hour = end
-                                        }
-                                        return (<div>
-                                            <TimePicker {...field} start={field.value.start_hour}
-                                                        end={field.value.end_hour} setupTime={setupTimeCallback}/>
-                                        </div>)
-                                    }}
-                                </Field>
-                            </div>
-                            <div className={'col-md-4 col-lg-2 mb-1'}>
-                                <Field id={"light.minimumLevel"} name={"light.minimumLevel"} type="number"
-                                       className="form-control" placeholder="Poziom oświetlenia"
-                                />
-                            </div>
-                            <div className={'col-md-4 col-lg-2 mb-1'}>
-                                <button type="submit" className="btn btn-primary" disabled={loadingUpdateManualPlan}>
-                                    {!loadingUpdateManualPlan ? 'Zapisz' : <div className="spinner-border spinner-border-sm" role="status">
-                                        <span className="visually-hidden">Loading...</span>
-                                    </div>}
-                                </button>
-                            </div>
-                        </div>
-                    </Form>
-                </Formik>
-                }
+                <ManualPlan/>
                 <div className={'title mt-3 mb-3'}>
                             <span>
                             <h4 style={{display: 'inline-block'}}>Zapisane plany</h4>
