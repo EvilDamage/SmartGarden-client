@@ -10,8 +10,13 @@ export const isAuthenticated = () =>{
 
         return new Date(expire_in) > new Date()
     }
-
     return false;
-
 }
 
+export const getEmailFromInvitation = (token) =>{
+    if(token){
+        const { email } = jwt.decode(token)
+        return email
+    }
+    return false;
+}

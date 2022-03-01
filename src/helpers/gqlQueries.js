@@ -15,9 +15,21 @@ mutation Mutation($email: String!, $password: String!) {
 }
 `
 
+export const CONFIRM_EMAIL = gql`
+mutation Mutation($token: String!) {
+  confirmEmail(token: $token)
+}
+`
+
 export const RESET_PASSWORD = gql`
 mutation Mutation($email: String!) {
   resetPassword(email: $email)
+}
+`
+
+export const SET_NEW_PASSWORD = gql`
+mutation Mutation($token: String!, $password: String!) {
+  setNewPassword(token: $token, password: $password)
 }
 `
 
@@ -29,6 +41,8 @@ query Query {
     name
     confirmed
     role
+    notifications
+    notifications_alerts
     created_at
     updated_at
   }
@@ -42,6 +56,7 @@ query Query {
     email
     name
     confirmed
+    confirmed_by_admin
     role
     created_at
     updated_at
@@ -49,10 +64,8 @@ query Query {
 }
 `
 
-
-
 export const EDIT_USER = gql`
-mutation Mutation($email: String!, $password: String!, $name: String!) {
+mutation Mutation($email: String, $password: String, $name: String) {
   editUser(email: $email, password: $password, name: $name){
       id
       name
@@ -62,8 +75,14 @@ mutation Mutation($email: String!, $password: String!, $name: String!) {
 `
 
 export const ADD_USER = gql`
-mutation Mutation($email: String!, $name: String!) {
-  addUser(email: $email, name: $name)
+mutation Mutation($email: String!) {
+  inviteUser(email: $email)
+}
+`
+
+export const REGISTER_INVITED_USER = gql`
+mutation Mutation($token: String!, $password: String!, $name: String!) {
+  invitationUserRegister(token: $token, password: $password, name: $name)
 }
 `
 

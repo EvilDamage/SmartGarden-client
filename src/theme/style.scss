@@ -152,15 +152,12 @@ $secondary: #519259;
   z-index: 10;
 
   .user-nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     box-shadow: 0px 0px 20px -12px rgba(66, 68, 90, 1);
 
     span {
-      margin-right: 1em;
-    }
-
-    .avatar {
-      width: 30px;
-      height: 30px;
       margin-right: 1em;
     }
   }
@@ -349,20 +346,32 @@ $secondary: #519259;
 
 }
 
-#user-panel {
+#settings {
   .list-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
   }
 
-  .btn-remove {
-    width: 32px !important;
-    min-height: 32px !important;
+  .user-manage{
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+
+  .user-manage > *:not(:last-child){
+    margin-right: 1em !important;
+  }
+
+  .btn-list {
+    width: 46px !important;
+    height: 38px !important;
     border-radius: 10px !important;
     margin: 0;
     padding: 0;
   }
+
 }
 
 #banner {

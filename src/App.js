@@ -22,6 +22,9 @@ import User from "./pages/User";
 import Home from "./pages/Home";
 import Plans from "./pages/Plans";
 import {isAuthenticated} from "./helpers/config";
+import ResetPassword from "./pages/ResetPassword";
+import EmailConfirmation from "./pages/EmailConfirmation";
+import UserInvitation from "./pages/UserInvitation";
 
 function App() {
     return (
@@ -33,6 +36,15 @@ function App() {
                     </Route>
                     <Route path="/register">
                         <Register/>
+                    </Route>
+                    <Route path="/reset-password">
+                        <ResetPassword/>
+                    </Route>
+                    <Route path="/email-confirmation">
+                        <EmailConfirmation/>
+                    </Route>
+                    <Route path="/invitation">
+                        <UserInvitation/>
                     </Route>
                     <PrivateRoute exact path="/">
                         <ContentWrapper><Home/></ContentWrapper>
