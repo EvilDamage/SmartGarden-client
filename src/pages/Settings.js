@@ -1,4 +1,4 @@
-import {Button, Form, Spinner} from "react-bootstrap";
+import {Button, Form as BootstrapForm, Spinner} from "react-bootstrap";
 import {useMutation, useQuery} from "@apollo/client";
 import {
     ADD_USER,
@@ -7,11 +7,14 @@ import {
     GET_SETTINGS,
     GET_USER,
     GET_USERS,
-    UPDATE_SETTINGS
+    UPDATE_SETTINGS,
+    EDIT_USER_PERMISSION
 } from "../helpers/gqlQueries";
 import Banner from "../components/Banner";
 import React, {useEffect, useState} from "react";
 import {FiCheck, FiUserMinus} from "react-icons/fi";
+import {Formik, Field, Form, ErrorMessage} from 'formik';
+import * as Yup from "yup";
 
 const Settings = () => {
     const [pump, setPump] = useState(false);
@@ -30,6 +33,10 @@ const Settings = () => {
     const {data: userData} = useQuery(GET_USER)
     const [addUser, {loading: loadingAddUser, error: errorAddUser}] = useMutation(ADD_USER)
     const [editUser, {loading: loadingEditUser, error: errorEditUser}] = useMutation(EDIT_USER)
+    const [editUserPermission, {
+        loading: loadingEditUserPermission,
+        error: errorEditUserPermission
+    }] = useMutation(EDIT_USER_PERMISSION)
     const [deleteUser, {loading: LoadingDeleteUser, error: errorDeleteUser}] = useMutation(DELETE_USER)
 
     useEffect(() => {
@@ -42,6 +49,12 @@ const Settings = () => {
             setMode(data.settings.mode)
         }
     }, [data])
+
+    const validateEmail = Yup.object().shape({
+        email: Yup.string()
+            .email('Niepoprawny adres email')
+            .required("Pole jest wymagane"),
+    });
 
     return (
         <div id={'settings'}>
@@ -59,43 +72,43 @@ const Settings = () => {
                         }
                         {data &&
                         <>
-                            <Form>
+                            <BootstrapForm>
                                 <label className="form-label">Tryb pracy</label>
-                                <Form.Select value={mode} onChange={(e) => setMode(e.target.value)}>
+                                <BootstrapForm.Select value={mode} onChange={(e) => setMode(e.target.value)}>
                                     <option value="manual">Manual</option>
                                     <option value="plan">Plan</option>
                                     <option value="off">Off</option>
-                                </Form.Select>
+                                </BootstrapForm.Select>
                                 <label className="form-label mt-3">Interwał odczytów (min)</label>
-                                <Form.Select value={interval}
-                                             onChange={(e) => setInterval(e.target.value)}>
+                                <BootstrapForm.Select value={interval}
+                                                      onChange={(e) => setInterval(e.target.value)}>
                                     <option value="1">1</option>
                                     <option value="5">5</option>
                                     <option value="10">10</option>
                                     <option value="30">30</option>
                                     <option value="60">60</option>
                                     <option value="120">120</option>
-                                </Form.Select>
+                                </BootstrapForm.Select>
                                 <div className={'mt-3'}>
-                                    <Form.Check
+                                    <BootstrapForm.Check
                                         type="switch"
                                         checked={pump}
                                         onClick={() => setPump(!pump)}
                                         label="Dozowanie wody"
                                     />
-                                    <Form.Check
+                                    <BootstrapForm.Check
                                         type="switch"
                                         checked={pumpFertilizer}
                                         onClick={() => setPumpFertilizer(!pumpFertilizer)}
                                         label="Dozowanie nawozu"
                                     />
-                                    <Form.Check
+                                    <BootstrapForm.Check
                                         type="switch"
                                         checked={light}
                                         onClick={() => setLight(!light)}
                                         label="Oświetlenie"
                                     />
-                                    <Form.Check
+                                    <BootstrapForm.Check
                                         type="switch"
                                         checked={fan}
                                         onClick={() => setFan(!fan)}
@@ -121,61 +134,81 @@ const Settings = () => {
                                         </div>
                                     }
                                 </button>
-                            </Form>
+                            </BootstrapForm>
                         </>
                         }
                     </div>
                     <div className={'col-lg-6'}>
                         <h4>Zaproś nowego użytkownika</h4>
-                        <form>
-                            <label className="form-label">Adres Email</label>
-                            <input type="email" className="form-control" placeholder="mail@website.com"
-                                   onChange={(e) => setAddEmail(e.target.value)} required={true}/>
-                            <button type="button" className="btn btn-primary mt-3"
-                                    onClick={() => {
-                                        if (addEmail !== '') {
-                                            addUser({
-                                                variables: {
-                                                    email: addEmail
-                                                }
-                                            }).then(() => {
-                                                usersRefeach()
-                                            })
-                                        }
-                                    }}>
-                                {!loadingAddUser ? 'Zaproś' :
-                                    <div className="spinner-border spinner-border-sm" role="status">
-                                        <span className="visually-hidden">Loading...</span>
-                                    </div>
-                                }
-                            </button>
-                        </form>
+                        <Formik
+                            initialValues={{
+                                email: '',
+                            }}
+                            validationSchema={validateEmail}
+                            onSubmit={(values, {resetForm}) => {
+                                addUser({
+                                    variables: {
+                                        email: values.email
+                                    }
+                                }).then(() => {
+                                    resetForm()
+                                })
+                            }}
+                        >
+                            <Form>
+                                <label className="form-label">Adres Email</label>
+                                <Field id={"email"} name={"email"} type="text"
+                                       className="form-control mb-1" placeholder="Email"
+                                />
+                                <ErrorMessage name="email" render={msg => <div className={'form-error'}>{msg}</div>}/>
+                                <button type="submit" className="btn btn-primary mt-3" disabled={loadingAddUser}>
+                                    {!loadingAddUser ? 'Zapisz' :
+                                        <div className="spinner-border spinner-border-sm" role="status">
+                                            <span className="visually-hidden">Loading...</span>
+                                        </div>}
+                                </button>
+                            </Form>
+                        </Formik>
                         <h4 className={'mt-3'}>Lista użytkowników</h4>
                         <ul className="list-group">
                             {
-                                usersList && usersList.users.map((user) => {
+                                userData && userData.me.role === 'ADMIN' && usersList && usersList.users.map((user) => {
                                     return (
                                         <li className={user.confirmed ? "list-group-item list-item" : "list-group-item list-item list-group-item-dark"}
                                             style={{height: '50px'}}>
-                                            <div>
+                                            <div className={'user-name'}>
                                                 <span style={{marginRight: '0.5rem'}}>{user.name}</span>
-                                                <small className={"text-muted"}>{user.email}</small>
+                                                <span className={"text-muted small"}>{user.email}</span>
                                             </div>
                                             {
                                                 userData && userData.me.id !== user.id &&
                                                 <div className={'user-manage'}>
-                                                    <Form.Select className={'w-25'} value={user.role}
-                                                                 onChange={(e) => setInterval(e.target.value)}>
+                                                    <BootstrapForm.Select className={'w-50'} defaultValue={user.role}
+                                                                          onChange={(e) => {
+                                                                              editUserPermission({
+                                                                                  variables: {
+                                                                                      id: user.id,
+                                                                                      role: e.target.value
+                                                                                  }
+                                                                              })
+                                                                          }}>
                                                         <option value="ADMIN">Admin</option>
                                                         <option value="VISITOR">Gość</option>
-                                                    </Form.Select>
+                                                    </BootstrapForm.Select>
                                                     {!user.confirmed_by_admin &&
-                                                        <button type="button" className="btn btn-success btn-list"
-                                                                onClick={() => {
-
-                                                                }}>
-                                                            <FiCheck/>
-                                                        </button>
+                                                    <button type="button" className="btn btn-success btn-list"
+                                                            onClick={() => {
+                                                                editUserPermission({
+                                                                    variables: {
+                                                                        id: user.id,
+                                                                        confirmed_by_admin: true
+                                                                    }
+                                                                }).then(()=>{
+                                                                    usersRefeach()
+                                                                })
+                                                            }}>
+                                                        <FiCheck/>
+                                                    </button>
                                                     }
                                                     <button type="button" className="btn btn-danger btn-list"
                                                             onClick={() => {
@@ -195,12 +228,12 @@ const Settings = () => {
                                     )
                                 })
                             }
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    )
-}
+                                </ul>
+                                </div>
+                                </div>
+                                </div>
+                                </div>
+                                )
+                            }
 
 export default Settings;

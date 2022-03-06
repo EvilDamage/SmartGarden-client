@@ -11,7 +11,7 @@ const NavBar = () => {
                     <span>{userName}</span>
                 </Dropdown.Toggle>
                 <Dropdown.Menu className={'dropdown'}>
-                    <Dropdown.Item href="/users">Zarządzaj</Dropdown.Item>
+                    <Dropdown.Item href="/users">Ustawenia użytkownika</Dropdown.Item>
                     <Dropdown.Item href="/login" onClick={()=>{
                         localStorage.removeItem('access_token');
                         localStorage.removeItem('refresh_token');

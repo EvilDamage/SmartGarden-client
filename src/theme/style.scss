@@ -134,7 +134,7 @@ $secondary: #519259;
     z-index: 200;
   }
 
-  .save{
+  .save {
     background: $primary;
     padding: 0.2em;
     margin: 0.2em;
@@ -163,7 +163,7 @@ $secondary: #519259;
   }
 
   .dropdown {
-    width: 100%;
+    //width: 100%;
     border-radius: 10px;
   }
 }
@@ -291,7 +291,7 @@ $secondary: #519259;
     align-items: center;
     height: 50px;
     width: 50px;
-    background: $secondary;
+    background: $primary;
     color: #ffffff;
     border-radius: 15px;
     font-size: 22px;
@@ -351,16 +351,31 @@ $secondary: #519259;
     display: flex;
     justify-content: space-between;
     align-items: center;
+
+
   }
 
-  .user-manage{
+  .user-name {
+    width: 50%;
+    overflow: hidden;
     display: flex;
-    width: 100%;
+
+
+    span{
+      width: 50%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+  .user-manage {
+    width: 50%;
+    display: flex;
     flex-direction: row;
     justify-content: flex-end;
   }
 
-  .user-manage > *:not(:last-child){
+  .user-manage > *:not(:last-child) {
     margin-right: 1em !important;
   }
 
@@ -398,7 +413,7 @@ $secondary: #519259;
 
 // Overwritten
 
-input[type=text], input[type=number], input[type=password], input[type=email]{
+input[type=text], input[type=number], input[type=password], input[type=email] {
   min-height: 48px;
   margin-bottom: 0px;
   padding-top: 12px;
@@ -428,7 +443,7 @@ input[type=text], input[type=number], input[type=password], input[type=email]{
 
 // Form
 
-.form-error{
+.form-error {
   font-size: 12px;
   color: #ff0700;
   margin-left: 24px;

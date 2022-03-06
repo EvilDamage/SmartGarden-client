@@ -65,12 +65,18 @@ query Query {
 `
 
 export const EDIT_USER = gql`
-mutation Mutation($email: String, $password: String, $name: String) {
-  editUser(email: $email, password: $password, name: $name){
+mutation Mutation($email: String, $password: String, $name: String, $notifications: Boolean, $notifications_alerts: Boolean) {
+  editUser(email: $email, password: $password, name: $name, notifications: $notifications, notifications_alerts: $notifications_alerts){
       id
       name
       email
   }
+}
+`
+
+export const EDIT_USER_PERMISSION = gql`
+mutation Mutation($id: ID!, $role: String, $confirmed_by_admin: Boolean) {
+  editUserPermission(id: $id, role: $role, confirmed_by_admin: $confirmed_by_admin)
 }
 `
 

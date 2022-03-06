@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {useMutation, useQuery} from "@apollo/client";
+import {useMutation, useLazyQuery} from "@apollo/client";
 import {GET_USER, GET_USERS_COUNT, LOGIN_USER, RESET_PASSWORD} from "../helpers/gqlQueries";
 import {useHistory} from "react-router-dom";
 import {Modal} from 'react-bootstrap';
@@ -14,13 +14,9 @@ const Login = () => {
     const [modalVisibility, setModalVisibility] = useState(false)
     const [registerAlert, setRegisterAlert] = useState(history.location.state ? history.location.state.registerSuccess : null)
 
-    const {data: userData, refetch: userDataRefeach} = useQuery(GET_USER);
+    const [userData] = useLazyQuery(GET_USER);
     const [login, {data, loading, error}] = useMutation(LOGIN_USER);
-    const [resetPassword, {
-        data: resetPasswordData,
-        loading: resetPasswordLoading,
-        error: resetPasswordError
-    }] = useMutation(RESET_PASSWORD);
+    const [resetPassword] = useMutation(RESET_PASSWORD);
 
     return (
         <div className="container-fluid" id={"login"}>
@@ -32,14 +28,14 @@ const Login = () => {
                             Zobacz rozwój swojego ogrodu i uzyskaj dostęp do historii!
                         </p>
                         {registerAlert &&
-                        <div className="alert alert-success alert-dismissible fade show" role="alert">
-                            <strong>Uwaga!</strong> Udało się pomyślnie zarejestrować
-                        </div>
+                            <div className="alert alert-success alert-dismissible fade show" role="alert">
+                                <strong>Uwaga!</strong> Udało się pomyślnie zarejestrować
+                            </div>
                         }
                         {error &&
-                        <div className="alert alert-danger alert-dismissible fade show" role="alert">
-                            <strong>Uwaga!</strong> Nie udało się zalogować
-                        </div>
+                            <div className="alert alert-danger alert-dismissible fade show" role="alert">
+                                <strong>Uwaga!</strong> Nie udało się zalogować
+                            </div>
                         }
                         <form>
                             <label className="form-label">Adres Email</label>
@@ -58,10 +54,10 @@ const Login = () => {
                                                 }
                                             }).then((res) => {
                                                 if (res.data.login) {
-                                                    userDataRefeach().then(r => {
-                                                        localStorage.setItem('access_token', res.data.login.access_token);
-                                                        localStorage.setItem('refresh_token', res.data.login.refresh_token);
-                                                        localStorage.setItem('user', userData.me.name);
+                                                    localStorage.setItem('access_token', res.data.login.access_token);
+                                                    localStorage.setItem('refresh_token', res.data.login.refresh_token);
+                                                    userData().then(user => {
+                                                        localStorage.setItem('user', user.data.me.name);
                                                         history.push('/')
                                                     })
                                                 }
@@ -81,7 +77,7 @@ const Login = () => {
                                                                          onClick={() => setModalVisibility(true)}>Przypomnij hasło</span>
                         </p>
                         <p>Nie masz konta? <span className={'password-reminder'}
-                                                                         onClick={() => history.push('/register')}>Utwórz</span>
+                                                 onClick={() => history.push('/register')}>Utwórz</span>
                         </p>
                     </div>
                 </div>

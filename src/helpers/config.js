@@ -7,7 +7,6 @@ export const isAuthenticated = () =>{
 
     if(token){
         const { expire_in } = jwt.decode(token)
-
         return new Date(expire_in) > new Date()
     }
     return false;
