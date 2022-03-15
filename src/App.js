@@ -70,7 +70,7 @@ function App() {
 
 function ProvideAuth({children}) {
     const link = createHttpLink({
-        uri: 'http://192.168.0.190:4000/graphql',
+        uri: process.env.REACT_APP_API_URL,
     });
 
     const authLink = setContext((_, {headers}) => {
