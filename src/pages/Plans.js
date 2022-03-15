@@ -15,13 +15,14 @@ import {Form as BootstrapForm, Modal, Spinner} from "react-bootstrap";
 import TimePicker from "../components/TimePicker";
 import History from "../components/History";
 import ManualPlan from "../components/ManualPlan";
+import CreatePlan from "../components/CreatePlan";
 
 const Plans = () => {
     const [modalVisibility, setModalVisibility] = useState(false)
     const [planName, setPlanName] = useState('')
     const [createList, setCreateList] = useState([])
 
-    const {data, loading, error, refetch} = useQuery(GET_PLANS);
+    // const {data, loading, error, refetch} = useQuery(GET_PLANS);
     const [updatePlan, {loading: loadingUpdatePlan, error: ErrorUpdatePlan}] = useMutation(ADD_PLANS);
     const [deletePlan, {loading: loadingDeletePlan, error: ErrorDeletePlan}] = useMutation(DELETE_PLAN);
     const {
@@ -69,79 +70,7 @@ const Plans = () => {
                     </button>
                 </div>
                 <div className="accordion accordion-flush">
-                    {
-                        data && data.profiles.map((plan, index) => {
-                            return (
-                                <div key={index} className="accordion-item">
-                                    <h2 className="accordion-header" id="flush-headingOne">
-                                        <BootstrapForm.Check
-                                            style={{position: 'absolute', zIndex: 100, marginLeft: 15}}
-                                            type="radio"
-                                            checked={settings && settings.settings.current_plan === plan.id}
-                                            onChange={() => {
-                                                updateSettings({
-                                                    variables: {
-                                                        current_plan: plan.id
-                                                    }
-                                                }).then(() => {
-                                                    settingsRefeatch()
-                                                })
-                                            }}
-                                        />
-                                        <button className="accordion-button collapsed button-title" type="button"
-                                                style={{paddingLeft: 65}}
-                                                data-bs-toggle="collapse" data-bs-target={'#index' + index}
-                                                aria-expanded="false" aria-controls="flush-collapseTwo">
-                                            {plan.name}
-                                        </button>
-                                    </h2>
-                                    <div id={'index' + index} className="accordion-collapse collapse"
-                                         aria-labelledby="headingOne"
-                                         data-bs-parent="#accordionExample">
-                                        <div className="accordion-body">
-                                            <ul className="list-group">
-                                                {
-                                                    plan.schedule.map((schedule, index) => {
-                                                        return (
-                                                            <li key={index}
-                                                                className="list-group-item d-flex justify-content-between align-items-start">
-                            <span>
-                            <FaTemperatureHigh/><span style={{
-                                marginLeft: '0.5em',
-                                marginRight: '1em'
-                            }}>{schedule.air_temperature}</span>
-                            <WiHumidity/><span style={{
-                                marginLeft: '0.5em',
-                                marginRight: '1em'
-                            }}>{schedule.air_humidity}%</span>
-                            <GiPlantRoots/><span style={{
-                                marginLeft: '0.5em',
-                                marginRight: '1em'
-                            }}>{schedule.soil_humidity}%</span>
-                            <BsFillLightbulbFill/><span style={{
-                                marginLeft: '0.5em',
-                                marginRight: '1em'
-                            }}>{schedule.light.start_hour}-{schedule.light.end_hour}</span>
-
-                            </span>
-                                                                <span
-                                                                    className="small">{schedule.duration} dni</span>
-                                                            </li>
-                                                        )
-                                                    })
-                                                }
-                                            </ul>
-                                            <div className={'button-wrapper mt-3'}>
-                                                <button type="button" className="btn btn-sm btn-danger"
-                                                        onClick={() => deletePlan({variables: {id: plan.id}}).then(() => refetch())}>Usuń
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            )
-                        })
-                    }
+                    <CreatePlan/>
                 </div>
                 <History/>
             </div>
@@ -280,7 +209,7 @@ const Plans = () => {
                                         schedule: createList,
                                     }
                                 }).then(() => {
-                                    refetch()
+                                    // refetch()
                                     setModalVisibility(false)
                                     setCreateList([])
                                     addEmptyPlanItem()

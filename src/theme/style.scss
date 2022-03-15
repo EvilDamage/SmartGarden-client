@@ -232,6 +232,19 @@ $secondary: #519259;
 
   }
 
+  .version{
+    color: #8d8d8d;
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+  }
+
+  @media (max-width: 600px) {
+    .version{
+      display: none;
+    }
+  }
+
   @media (max-width: 600px) {
     width: 100%;
     height: 4em;
@@ -314,6 +327,11 @@ $secondary: #519259;
     text-align: center;
     border-radius: 12px;
     min-height: 150px;
+  }
+
+  .manual-parameters{
+    font-size: 26px;
+    font-weight: 600;
   }
 
   .progress-circle {

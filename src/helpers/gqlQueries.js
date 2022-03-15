@@ -175,26 +175,54 @@ query Query {
 }
 `
 
-export const GET_PLANS = gql`
+export const GET_PLAN = gql`
 query Query ($id: ID){
-  profiles (id: $id){
-    id
-    name
-    schedule{
-        id
-        air_humidity
-        soil_humidity
-        air_temperature
-        light{
-            start_hour
-            end_hour
-            minimumLevel
+  profile(id: $id){
+       id
+        name
+        schedule{
+            id
+            air_humidity
+            soil_humidity
+            air_temperature
+            light{
+                start_hour
+                end_hour
+                minimumLevel
+            }
+            duration
         }
-        duration
+        started_at
+        created_at
+        updated_at
     }
-    started_at
-    created_at
-    updated_at
+}
+`
+
+export const GET_PLANS = gql`
+query Query ($offset: Int, $limit: Int){
+  profiles(offset: $offset, limit: $limit){
+    totalLength
+    hasMore
+    profiles{
+       id
+        name
+        schedule{
+            id
+            air_humidity
+            soil_humidity
+            air_temperature
+            light{
+                start_hour
+                end_hour
+                minimumLevel
+            }
+            duration
+        }
+        started_at
+        created_at
+        updated_at
+    }
   }
 }
 `

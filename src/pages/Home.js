@@ -1,12 +1,12 @@
 import {Button, Card, Col, Container, Form, Row, Spinner} from "react-bootstrap";
 import {useQuery} from "@apollo/client";
-import {GET_PLANS, GET_SETTINGS, LAST_SENSOR_READS} from "../helpers/gqlQueries";
+import {GET_PLAN, GET_PLANS, GET_SETTINGS, LAST_SENSOR_READS, MANUAL_PLAN} from "../helpers/gqlQueries";
 import {CircularProgressbar, CircularProgressbarWithChildren} from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import {IoReload} from 'react-icons/io5'
 import {calculateDaysBetween, formatDateForDisplay} from "../helpers/dataParse";
 import Banner from "../components/Banner";
-import {BsFillLightbulbFill, FaTemperatureHigh, GiPlantRoots, WiHumidity} from "react-icons/all";
+import {BsFillLightbulbFill, BsFillPencilFill, FaTemperatureHigh, GiPlantRoots, WiHumidity} from "react-icons/all";
 import React, {useEffect, useState} from "react";
 
 
@@ -16,18 +16,19 @@ const Home = () => {
 
     const {data, loading, error, refetch} = useQuery(LAST_SENSOR_READS, {notifyOnNetworkStatusChange: true});
     const {data: settings, loading: settingsLoading, error: settingsError} = useQuery(GET_SETTINGS);
-    const {data: plansData, loading: planLoading, error: plansError} = useQuery(GET_PLANS, {
+    const {data: plansData, loading: planLoading, error: plansError} = useQuery(GET_PLAN, {
         variables: {id: settings && settings.settings.current_plan}
     });
+    const {data: manualPlanData, loading: loadingManualPlan, error: ErrorManualPlan} = useQuery(MANUAL_PLAN);
 
     useEffect(() => {
         let totalDuration = 0;
-        plansData && plansData.profiles[0].schedule.map((schedule) => {
+        plansData && plansData.profile[0].schedule.map((schedule) => {
             totalDuration += schedule.duration
         })
 
         setTotalPlanDuration(totalDuration)
-        setPlanProgress(calculateDaysBetween(new Date(), plansData && plansData.profiles[0].started_at))
+        setPlanProgress(calculateDaysBetween(new Date(), plansData && plansData.profile[0].started_at))
 
     }, [plansData])
 
@@ -140,18 +141,94 @@ const Home = () => {
                     </Col>
                 </Row>
                 <div className={'title mt-3 w-100'}>
-                    <span>
-                        <h4 style={{display: 'inline-block'}}>Wybrany plan</h4>
+                    <div className={'w-100'}>
+                        <div className={'title mb-3'}>
+                            <h4 style={{display: 'inline-block'}}>Wybrany plan</h4>
+                            <a href={'/plans'} className={'refeach'}>
+                                <BsFillPencilFill/>
+                            </a>
+                        </div>
+                        {
+                            settings && settings.settings.mode === "off" &&
+                            <div>
+                                System wyłączony
+                            </div>
+                        }
                         {
                             settings && settings.settings.mode === "manual" &&
-                            <p>System działa w trybie manualnym</p>
+                            <div>
+                                <p className={'mt-3'}>System działa w trybie manualnym</p>
+                                <Row>
+                                    <Col lg={2} md={3} className={'mt-2'}>
+                                        <Card body className={'info-card'}>
+                                            {!loadingManualPlan ?
+                                                <div className={'manual-parameters'}>
+                                                    {manualPlanData && manualPlanData.manualProfile.air_temperature}°C
+                                                </div>
+                                                :
+                                                <Spinner animation="border" variant="primary" className={'spinner'}/>
+                                            }
+                                            <div className={'label mt-2'}>Zadana temperatura powietrza</div>
+                                        </Card>
+                                    </Col>
+                                    <Col lg={2} md={3} className={'mt-2'}>
+                                        <Card body className={'info-card'}>
+                                            {!loadingManualPlan ?
+                                                <div className={'manual-parameters'}>
+                                                    {manualPlanData && manualPlanData.manualProfile.air_humidity}%
+                                                </div>
+                                                :
+                                                <Spinner animation="border" variant="primary" className={'spinner'}/>
+                                            }
+                                            <div className={'label mt-2'}>Zadana wilgotność powietrza</div>
+                                        </Card>
+                                    </Col>
+                                    <Col lg={2} md={3} className={'mt-2'}>
+                                        <Card body className={'info-card'}>
+                                            {!loadingManualPlan ?
+                                                <div className={'manual-parameters'}>
+                                                    {manualPlanData && manualPlanData.manualProfile.soil_humidity}%
+                                                </div>
+                                                :
+                                                <Spinner animation="border" variant="primary" className={'spinner'}/>
+                                            }
+                                            <div className={'label mt-2'}>Zadana wilgotność gleby</div>
+                                        </Card>
+                                    </Col>
+                                    <Col lg={2} md={3} className={'mt-2'}>
+                                        <Card body className={'info-card'}>
+                                            <div className={'label mt-2'}>Doświatlanie w godzinach:</div>
+                                            {!loadingManualPlan ?
+                                                <div className={'manual-parameters'}>
+                                                    {manualPlanData && manualPlanData.manualProfile.light.start_hour}
+                                                    -
+                                                    {manualPlanData && manualPlanData.manualProfile.light.end_hour}
+                                                </div>
+                                                :
+                                                <Spinner animation="border" variant="primary" className={'spinner'}/>
+                                            }
+                                        </Card>
+                                    </Col>
+                                    <Col lg={2} md={3} className={'mt-2'}>
+                                        <Card body className={'info-card'}>
+                                            {!loadingManualPlan ?
+                                                <div className={'manual-parameters'}>
+                                                    {manualPlanData && manualPlanData.manualProfile.light.minimumLevel}%
+                                                </div>
+                                                :
+                                                <Spinner animation="border" variant="primary" className={'spinner'}/>
+                                            }
+                                            <div className={'label mt-2'}>Zadany minimalny poziom oświetlenia</div>
+                                        </Card>
+                                    </Col>
+                                </Row>
+                            </div>
                         }
                         {
                             settings && !settings.settings.current_plan &&
                             <p>Nie wybrano planu</p>
-
                         }
-                    </span>
+                    </div>
                 </div>
                 {
                     settings && settings.settings.mode === "plan" &&
@@ -160,7 +237,7 @@ const Home = () => {
                             <button className="accordion-button collapsed button-title" type="button"
                                     data-bs-toggle="collapse" data-bs-target={'#index'}
                                     aria-expanded="false" aria-controls="flush-collapseTwo">
-                                {plansData && plansData.profiles[0].name}
+                                {plansData && plansData.profile[0].name}
                                 <div className="progress w-50" style={{marginLeft: '1em', marginRight: '0.2em'}}>
                                     <div className="progress-bar" role="progressbar"
                                          style={{width: (planProgress / totalPlanDuration * 100) + '%'}}
@@ -177,7 +254,7 @@ const Home = () => {
                             <div className="accordion-body">
                                 <ul className="list-group">
                                     {
-                                        plansData && plansData.profiles[0].schedule.map((schedule) => {
+                                        plansData && plansData.profile[0].schedule.map((schedule) => {
                                             return (
                                                 <li className="list-group-item d-flex justify-content-between align-items-start">
                                                             <span>

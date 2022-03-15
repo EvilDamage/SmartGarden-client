@@ -9,15 +9,16 @@ const SideBar = () => {
 
     return (
         <div id={'sidebar'} className={''}>
-            <div className={'sidebar-logo'}>
+            <a href='/' className={'sidebar-logo'}>
                 <FaLeaf style={{color: '#064635', fontSize: '34px', marginTop: '30px'}}/>
-            </div>
+            </a>
             <div className={'sidebar-nav'}>
                 <a href={'/'} className={pathName === '/' && 'active'}><MdOutlineSpaceDashboard/></a>
                 <a href={'/plans'} className={pathName === '/plans' && 'active'}><RiPlantLine/></a>
                 <a href={'/stats'} className={pathName === '/stats' && 'active'}><AiOutlineBarChart/></a>
                 <a href={'/settings'} className={pathName === '/settings' && 'active'}><IoSettingsOutline/></a>
             </div>
+            <div className={'version'}>v. 0.1.0</div>
         </div>
     )
 }
