@@ -4,15 +4,24 @@ import {LOGIN_USER, REGISTER_USER} from "../helpers/gqlQueries";
 import {useHistory} from "react-router-dom";
 import {Modal} from 'react-bootstrap';
 import {onError} from "@apollo/client/link/error";
+import {ErrorMessage, Field, Form, Formik} from "formik";
+import * as Yup from "yup";
 
 const Register = () => {
     const history = useHistory();
-
-    const [name, setName] = useState('')
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
-
     const [register, {data, loading, error}] = useMutation(REGISTER_USER);
+
+    const validate = Yup.object().shape({
+        name: Yup.string()
+            .min(1, 'Nazwa użytkownika jest za krótka'),
+        email: Yup.string().email('Niepoprawny adres email'),
+        password: Yup.string()
+            .min(8, "Hasło musi mieć min. 8 znaków")
+            .matches(/^(?=.*[A-Z])/, 'Hasło musi zawierać min. 1 duża literę')
+            .matches(/^(?=.*[a-z])/, 'Hasło musi zawierać min. 1 małą literę')
+            .matches(/^(?=.*\d)/, 'Hasło musi zawierać min. 1 liczbę.')
+            .matches(/^(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]/, 'Hasło musi zawierać min. 1 znak specjalny.')
+    });
 
     return (
         <div className="container-fluid" id={"register"}>
@@ -28,41 +37,53 @@ const Register = () => {
                             <strong>Uwaga!</strong> Nie udało się zarejestrować
                         </div>
                         }
-                        <form>
-                            <label className="form-label">Imię</label>
-                            <input type="text" className="form-control" placeholder="Jan"
-                                   onChange={(e) => setName(e.target.value)}/>
-                            <label className="form-label mt-2">Adres Email</label>
-                            <input type="email" className="form-control" placeholder="mail@website.com"
-                                   onChange={(e) => setEmail(e.target.value)}/>
-                            <label className="form-label mt-2">Hasło</label>
-                            <input type="password" className="form-control" placeholder="Min. 8 znaków"
-                                   onChange={(e) => setPassword(e.target.value)}/>
-                            <button type="button" className="btn btn-primary mt-3"
-                                    onClick={() => {
-                                        if (name !== '' && email !== '' && password !== '') {
-                                            register({
-                                                variables: {
-                                                    name: name,
-                                                    email: email,
-                                                    password: password
-                                                }
-                                            }).then((res) => {
-                                                if (res.data.register) {
-                                                    history.push('/login', {registerSuccess: true})
-                                                }
-                                            }).catch((e) => {
-                                                console.error(e)
-                                            })
-                                        }
-                                    }}>
-                                {!loading ? 'Zarejestruj' :
-                                    <div className="spinner-border spinner-border-sm" role="status">
-                                        <span className="visually-hidden">Loading...</span>
-                                    </div>
-                                }
-                            </button>
-                        </form>
+                        <Formik
+                            initialValues={{
+                                name: '',
+                                email: '',
+                                password: '',
+                            }}
+                            validationSchema={validate}
+                            onSubmit={(values, {resetForm}) => {
+                                register({
+                                    variables: {
+                                        name: values.name,
+                                        email: values.email,
+                                        password: values.password
+                                    }
+                                }).then((res) => {
+                                    if (res.data.register) {
+                                        history.push('/login', {registerSuccess: true})
+                                    }
+                                }).catch((e) => {
+                                    console.error(e)
+                                })
+                            }}>
+                            <Form>
+                                <label className="form-label">Nazwa</label>
+                                <Field id={"name"} name={"name"} type="text"
+                                       className="form-control mb-1" placeholder="Nazwa"
+                                />
+                                <ErrorMessage name="name" render={msg => <div className={'form-error'}>{msg}</div>}/>
+                                <label className="form-label">Adres Email</label>
+                                <Field id={"email"} name={"email"} type="text"
+                                       className="form-control mb-1" placeholder="mail@website.com"
+                                />
+                                <ErrorMessage name="email" render={msg => <div className={'form-error'}>{msg}</div>}/>
+                                <label className="form-label">Hasło</label>
+                                <Field id={"password"} name={"password"} type="password"
+                                       className="form-control mb-1" placeholder="Min. 8 znaków"
+                                />
+                                <ErrorMessage name="password" render={msg => <div className={'form-error'}>{msg}</div>}/>
+                                <button type="submit" className="btn btn-primary mt-3">
+                                    {!loading ? 'Zarejestruj' :
+                                        <div className="spinner-border spinner-border-sm" role="status">
+                                            <span className="visually-hidden">Loading...</span>
+                                        </div>
+                                    }
+                                </button>
+                            </Form>
+                        </Formik>
                         <p className={'mt-3'}>Masz konto? <span className={'password-reminder'}
                                                  onClick={() => history.push('/login')}>Zaloguj</span>
                         </p>

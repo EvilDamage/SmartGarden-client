@@ -18,7 +18,7 @@ const SideBar = () => {
                 <a href={'/stats'} className={pathName === '/stats' && 'active'}><AiOutlineBarChart/></a>
                 <a href={'/settings'} className={pathName === '/settings' && 'active'}><IoSettingsOutline/></a>
             </div>
-            <div className={'version'}>v. 0.1.0</div>
+            <div className={'version'}>v. 0.1.1</div>
         </div>
     )
 }

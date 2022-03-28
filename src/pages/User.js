@@ -20,7 +20,11 @@ const User = () => {
             .min(1, 'Nazwa użytkownika jest za krótka'),
         email: Yup.string().email('Niepoprawny adres email'),
         password: Yup.string()
-            .min(8, "Hasło jest za krótkie")
+            .min(8, "Hasło musi mieć min. 8 znaków")
+            .matches(/^(?=.*[A-Z])/, 'Hasło musi zawierać min. 1 duża literę')
+            .matches(/^(?=.*[a-z])/, 'Hasło musi zawierać min. 1 małą literę')
+            .matches(/^(?=.*\d)/, 'Hasło musi zawierać min. 1 liczbę.')
+            .matches(/^(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]/, 'Hasło musi zawierać min. 1 znak specjalny.')
     });
 
     return (

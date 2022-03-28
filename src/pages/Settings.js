@@ -1,4 +1,4 @@
-import {Button, Form as BootstrapForm, Spinner} from "react-bootstrap";
+import {Button, Form as BootstrapForm, OverlayTrigger, Spinner, Tooltip} from "react-bootstrap";
 import {useMutation, useQuery} from "@apollo/client";
 import {
     ADD_USER,
@@ -15,6 +15,7 @@ import React, {useEffect, useState} from "react";
 import {FiCheck, FiUserMinus} from "react-icons/fi";
 import {Formik, Field, Form, ErrorMessage} from 'formik';
 import * as Yup from "yup";
+import {MdBlock} from "react-icons/all";
 
 const Settings = () => {
     const [pump, setPump] = useState(false);
@@ -162,7 +163,7 @@ const Settings = () => {
                                 />
                                 <ErrorMessage name="email" render={msg => <div className={'form-error'}>{msg}</div>}/>
                                 <button type="submit" className="btn btn-primary mt-3" disabled={loadingAddUser}>
-                                    {!loadingAddUser ? 'Zapisz' :
+                                    {!loadingAddUser ? 'Zaproś' :
                                         <div className="spinner-border spinner-border-sm" role="status">
                                             <span className="visually-hidden">Loading...</span>
                                         </div>}
@@ -193,47 +194,70 @@ const Settings = () => {
                                                                               })
                                                                           }}>
                                                         <option value="ADMIN">Admin</option>
-                                                        <option value="VISITOR">Gość</option>
+                                                        <option value="VISITOR">Konsultant</option>
                                                     </BootstrapForm.Select>
-                                                    {!user.confirmed_by_admin &&
-                                                    <button type="button" className="btn btn-success btn-list"
-                                                            onClick={() => {
-                                                                editUserPermission({
-                                                                    variables: {
-                                                                        id: user.id,
-                                                                        confirmed_by_admin: true
-                                                                    }
-                                                                }).then(()=>{
-                                                                    usersRefeach()
-                                                                })
-                                                            }}>
-                                                        <FiCheck/>
-                                                    </button>
+                                                    {!user.confirmed_by_admin ?
+                                                        <OverlayTrigger overlay={<Tooltip id="tooltip-disabled">Aktywuj
+                                                            użytkownika</Tooltip>}>
+                                                            <button type="button" className="btn btn-success btn-list"
+                                                                    onClick={() => {
+                                                                        editUserPermission({
+                                                                            variables: {
+                                                                                id: user.id,
+                                                                                confirmed_by_admin: true
+                                                                            }
+                                                                        }).then(() => {
+                                                                            usersRefeach()
+                                                                        })
+                                                                    }}>
+                                                                <FiCheck/>
+                                                            </button>
+                                                        </OverlayTrigger>
+                                                        :
+                                                        <OverlayTrigger overlay={<Tooltip id="tooltip-disabled">Dezaktywuj
+                                                            użytkownika</Tooltip>}>
+                                                            <button type="button" className="btn btn-danger btn-list"
+                                                                    onClick={() => {
+                                                                        editUserPermission({
+                                                                            variables: {
+                                                                                id: user.id,
+                                                                                confirmed_by_admin: false
+                                                                            }
+                                                                        }).then(() => {
+                                                                            usersRefeach()
+                                                                        })
+                                                                    }}>
+                                                                <MdBlock/>
+                                                            </button>
+                                                        </OverlayTrigger>
                                                     }
-                                                    <button type="button" className="btn btn-danger btn-list"
-                                                            onClick={() => {
-                                                                deleteUser({
-                                                                    variables: {
-                                                                        id: user.id
-                                                                    }
-                                                                }).then(() => {
-                                                                    usersRefeach()
-                                                                })
-                                                            }}>
-                                                        <FiUserMinus/>
-                                                    </button>
+                                                    <OverlayTrigger overlay={<Tooltip id="tooltip-disabled">Usuń
+                                                        użytkownika</Tooltip>}>
+                                                        <button type="button" className="btn btn-danger btn-list"
+                                                                onClick={() => {
+                                                                    deleteUser({
+                                                                        variables: {
+                                                                            id: user.id
+                                                                        }
+                                                                    }).then(() => {
+                                                                        usersRefeach()
+                                                                    })
+                                                                }}>
+                                                            <FiUserMinus/>
+                                                        </button>
+                                                    </OverlayTrigger>
                                                 </div>
                                             }
                                         </li>
                                     )
                                 })
                             }
-                                </ul>
-                                </div>
-                                </div>
-                                </div>
-                                </div>
-                                )
-                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
+}
 
 export default Settings;
