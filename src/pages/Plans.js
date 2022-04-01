@@ -19,6 +19,7 @@ import CreatePlan from "../components/CreatePlan";
 
 import {Formik, Form, Field, ErrorMessage, FieldArray} from 'formik';
 import * as Yup from "yup";
+import FertilizerPlan from "../components/FertilizerPlan";
 
 const Plans = () => {
     const [modalVisibility, setModalVisibility] = useState(false)
@@ -90,6 +91,7 @@ const Plans = () => {
             <Banner title={'Plany'}/>
             <div className={'container'}>
                 <ManualPlan/>
+                <FertilizerPlan/>
                 <div className={'title mt-3 mb-3'}>
                             <span>
                             <h4 style={{display: 'inline-block'}}>Zapisane plany</h4>
@@ -102,7 +104,6 @@ const Plans = () => {
                 <div className="accordion accordion-flush">
                     <CreatePlan reload={reload}/>
                 </div>
-                <History/>
             </div>
             <Modal
                 show={modalVisibility}

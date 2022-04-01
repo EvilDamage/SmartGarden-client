@@ -14,7 +14,9 @@ const Register = () => {
     const validate = Yup.object().shape({
         name: Yup.string()
             .min(1, 'Nazwa użytkownika jest za krótka'),
-        email: Yup.string().email('Niepoprawny adres email'),
+        email: Yup.string()
+            .email('Niepoprawny adres email')
+            .required('Pole jest wymagane'),
         password: Yup.string()
             .min(8, "Hasło musi mieć min. 8 znaków")
             .matches(/^(?=.*[A-Z])/, 'Hasło musi zawierać min. 1 duża literę')

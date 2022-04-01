@@ -13,7 +13,13 @@ const ResetPassword = () => {
     const [setNewPassword, {data, loading, error}] = useMutation(SET_NEW_PASSWORD)
 
     const validate = Yup.object().shape({
-        password: Yup.string().required('Pole jest wymagane'),
+        password: Yup.string()
+            .required('Pole jest wymagane')
+            .min(8, "Hasło musi mieć min. 8 znaków")
+            .matches(/^(?=.*[A-Z])/, 'Hasło musi zawierać min. 1 duża literę')
+            .matches(/^(?=.*[a-z])/, 'Hasło musi zawierać min. 1 małą literę')
+            .matches(/^(?=.*\d)/, 'Hasło musi zawierać min. 1 liczbę.')
+            .matches(/^(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]/, 'Hasło musi zawierać min. 1 znak specjalny.'),
         passwordConfirmation: Yup.string()
             .oneOf([Yup.ref('password'), null], 'Hasła muszą być identyczne')
             .required('Pole jest wymagane'),

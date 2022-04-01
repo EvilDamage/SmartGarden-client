@@ -3,6 +3,28 @@ $secondary: #519259;
 
 @import '~bootstrap/scss/bootstrap.scss';
 
+*{
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: #dbdbdb;
+  }
+
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: $primary;
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: $secondary;
+  }
+}
+
 #login, #register {
   .row .col-md-7, .row .col-md-5 {
     height: 100vh;

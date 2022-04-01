@@ -8,6 +8,7 @@ import {calculateDaysBetween, formatDateForDisplay} from "../helpers/dataParse";
 import Banner from "../components/Banner";
 import {BsFillLightbulbFill, BsFillPencilFill, FaTemperatureHigh, GiPlantRoots, WiHumidity} from "react-icons/all";
 import React, {useEffect, useState} from "react";
+import History from "../components/History";
 
 
 const Home = () => {
@@ -287,6 +288,7 @@ const Home = () => {
                         </div>
                     </div>
                 }
+                <History/>
             </div>
         </>
     )
