@@ -259,6 +259,8 @@ query Query{
         end_hour
         minimumLevel
     }
+    fertilizer,
+    fertilizer_interval,
     created_at
     updated_at
   }
@@ -266,8 +268,8 @@ query Query{
 `
 
 export const ADD_MANUAL_PLAN = gql`
-mutation Mutation ($air_humidity: Int!, $soil_humidity: Int!, $air_temperature: Int!, $light: LightTimetableInput!){
-  addManualProfile (air_humidity: $air_humidity, soil_humidity: $soil_humidity, air_temperature: $air_temperature, light: $light){
+mutation Mutation ($air_humidity: Int, $soil_humidity: Int, $air_temperature: Int, $light: LightTimetableInput, $fertilizer: Int, $fertilizer_interval: Int){
+  addManualProfile (air_humidity: $air_humidity, soil_humidity: $soil_humidity, air_temperature: $air_temperature, light: $light, fertilizer: $fertilizer, fertilizer_interval: $fertilizer_interval){
     air_humidity
     soil_humidity
     air_temperature
@@ -276,6 +278,8 @@ mutation Mutation ($air_humidity: Int!, $soil_humidity: Int!, $air_temperature: 
         end_hour
         minimumLevel
     }
+    fertilizer,
+    fertilizer_interval,
     created_at
     updated_at
   }

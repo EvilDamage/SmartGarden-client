@@ -28,8 +28,6 @@ const Settings = () => {
     const {data, loading, error} = useQuery(GET_SETTINGS);
     const [updateSettings, {loading: loadingUpdateSettings, error: ErrorUpdateSettings}] = useMutation(UPDATE_SETTINGS);
 
-    const [addEmail, setAddEmail] = useState('')
-
     const {data: usersList, refetch: usersRefeach} = useQuery(GET_USERS)
     const {data: userData} = useQuery(GET_USER)
     const [addUser, {loading: loadingAddUser, error: errorAddUser}] = useMutation(ADD_USER)
