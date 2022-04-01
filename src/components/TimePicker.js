@@ -86,10 +86,10 @@ const NumberPicker = (props) => {
     )
 }
 
-const TimePicker = ({start, end, index, createList,  setCreateList}) => {
-    const [startDate, setStartDate] = useState(start)
-    const [endDate, setEndDate] = useState(end)
-    const [pickerVisibility, setPickerVisibility] = useState(false)
+const TimePicker = ({start, end, index, createList,  setCreateList, setupTime}) => {
+    const [startDate, setStartDate] = useState(start);
+    const [endDate, setEndDate] = useState(end);
+    const [pickerVisibility, setPickerVisibility] = useState(false);
 
     useEffect(()=>{
         if(index && createList && setCreateList){
@@ -98,6 +98,10 @@ const TimePicker = ({start, end, index, createList,  setCreateList}) => {
             createListTemp[index].light.end_hour = endDate
 
             setCreateList([...createListTemp])
+        }
+
+        if(setupTime){
+            setupTime(startDate, endDate)
         }
     }, [startDate, endDate])
 

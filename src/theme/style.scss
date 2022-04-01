@@ -3,6 +3,28 @@ $secondary: #519259;
 
 @import '~bootstrap/scss/bootstrap.scss';
 
+*{
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: #dbdbdb;
+  }
+
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: $primary;
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: $secondary;
+  }
+}
+
 #login, #register {
   .row .col-md-7, .row .col-md-5 {
     height: 100vh;
@@ -134,7 +156,7 @@ $secondary: #519259;
     z-index: 200;
   }
 
-  .save{
+  .save {
     background: $primary;
     padding: 0.2em;
     margin: 0.2em;
@@ -152,21 +174,18 @@ $secondary: #519259;
   z-index: 10;
 
   .user-nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     box-shadow: 0px 0px 20px -12px rgba(66, 68, 90, 1);
 
     span {
       margin-right: 1em;
     }
-
-    .avatar {
-      width: 30px;
-      height: 30px;
-      margin-right: 1em;
-    }
   }
 
   .dropdown {
-    width: 100%;
+    //width: 100%;
     border-radius: 10px;
   }
 }
@@ -235,6 +254,19 @@ $secondary: #519259;
 
   }
 
+  .version{
+    color: #8d8d8d;
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+  }
+
+  @media (max-width: 600px) {
+    .version{
+      display: none;
+    }
+  }
+
   @media (max-width: 600px) {
     width: 100%;
     height: 4em;
@@ -294,7 +326,7 @@ $secondary: #519259;
     align-items: center;
     height: 50px;
     width: 50px;
-    background: $secondary;
+    background: $primary;
     color: #ffffff;
     border-radius: 15px;
     font-size: 22px;
@@ -317,6 +349,11 @@ $secondary: #519259;
     text-align: center;
     border-radius: 12px;
     min-height: 150px;
+  }
+
+  .manual-parameters{
+    font-size: 26px;
+    font-weight: 600;
   }
 
   .progress-circle {
@@ -349,20 +386,47 @@ $secondary: #519259;
 
 }
 
-#user-panel {
+#settings {
   .list-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
+
+
   }
 
-  .btn-remove {
-    width: 32px !important;
-    min-height: 32px !important;
+  .user-name {
+    width: 50%;
+    overflow: hidden;
+    display: flex;
+
+
+    span{
+      width: 50%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+  .user-manage {
+    width: 50%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+
+  .user-manage > *:not(:last-child) {
+    margin-right: 1em !important;
+  }
+
+  .btn-list {
+    width: 46px !important;
+    height: 38px !important;
     border-radius: 10px !important;
     margin: 0;
     padding: 0;
   }
+
 }
 
 #banner {
@@ -389,7 +453,7 @@ $secondary: #519259;
 
 // Overwritten
 
-input[type=text], input[type=password], input[type=email] {
+input[type=text], input[type=number], input[type=password], input[type=email] {
   min-height: 48px;
   margin-bottom: 0px;
   padding-top: 12px;
@@ -415,4 +479,12 @@ input[type=text], input[type=password], input[type=email] {
   padding: 4px 8px;
   font-size: .875rem;
   border-radius: 0.2rem;
+}
+
+// Form
+
+.form-error {
+  font-size: 12px;
+  color: #ff0700;
+  margin-left: 24px;
 }

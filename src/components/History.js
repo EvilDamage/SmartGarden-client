@@ -11,8 +11,8 @@ const History = () => {
 
     const {data, loading} = useQuery(HISTORY, {variables: {limit: limit, offset: offset}})
 
-    useEffect(()=>{
-        if(data){
+    useEffect(() => {
+        if (data) {
             setHistoryData(data)
         }
     }, [data])
@@ -35,7 +35,7 @@ const History = () => {
                         }}><span className="page-link">2</span></li>
                         <li className="page-item" onClick={() => {
                             if (historyData.history.hasMore) {
-                                setOffset(offset + (2*limit))
+                                setOffset(offset + (2 * limit))
                             }
                         }}><span className="page-link">3</span></li>
                     </>
@@ -45,7 +45,7 @@ const History = () => {
                     <>
                         <li className="page-item" onClick={() => {
                             if (offset > 0) {
-                                setOffset(offset - (2*limit))
+                                setOffset(offset - (2 * limit))
                             }
                         }}><span className="page-link">{totalPages - 2}</span></li>
                         <li className="page-item" onClick={() => {
@@ -99,31 +99,32 @@ const History = () => {
                             <h4 style={{display: 'inline-block'}}>Historia</h4>
                         </span>
             </div>
-            {historyData &&
-                <div>
-                    <table className="table table-hover">
-                        <thead>
-                        <tr>
-                            <th scope="col">Index</th>
-                            <th scope="col">Komentarz</th>
-                            <th scope="col">Data</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {historyData.history.history.map((historyItem, index) => {
-                            return (
-                                <tr>
-                                    <td>{historyItem.id}</td>
-                                    <td>{historyItem.comment}</td>
-                                    <td>{formatDateForDisplay(historyItem.created_at)}</td>
-                                </tr>
-                            )
-                        })}
-                        </tbody>
-                    </table>
-                    {generatePagination(historyData.history.totalLength, offset, limit)}
-                </div>
-
+            {historyData ?
+            <div className={'table-responsive'}>
+                <table className="table table-hover">
+                    <thead>
+                    <tr>
+                        <th scope="col">Index</th>
+                        <th scope="col">Komentarz</th>
+                        <th scope="col">Data</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {historyData.history.history.map((historyItem, index) => {
+                        return (
+                            <tr key={index}>
+                                <td>{historyItem.id}</td>
+                                <td>{historyItem.comment}</td>
+                                <td>{formatDateForDisplay(historyItem.created_at)}</td>
+                            </tr>
+                        )
+                    })}
+                    </tbody>
+                </table>
+                {generatePagination(historyData.history.totalLength, offset, limit)}
+            </div>
+            :
+                <div>Brak wyników</div>
             }
         </>
     )

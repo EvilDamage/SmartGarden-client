@@ -15,9 +15,21 @@ mutation Mutation($email: String!, $password: String!) {
 }
 `
 
+export const CONFIRM_EMAIL = gql`
+mutation Mutation($token: String!) {
+  confirmEmail(token: $token)
+}
+`
+
 export const RESET_PASSWORD = gql`
 mutation Mutation($email: String!) {
   resetPassword(email: $email)
+}
+`
+
+export const SET_NEW_PASSWORD = gql`
+mutation Mutation($token: String!, $password: String!) {
+  setNewPassword(token: $token, password: $password)
 }
 `
 
@@ -29,6 +41,8 @@ query Query {
     name
     confirmed
     role
+    notifications
+    notifications_alerts
     created_at
     updated_at
   }
@@ -42,6 +56,7 @@ query Query {
     email
     name
     confirmed
+    confirmed_by_admin
     role
     created_at
     updated_at
@@ -49,11 +64,9 @@ query Query {
 }
 `
 
-
-
 export const EDIT_USER = gql`
-mutation Mutation($email: String!, $password: String!, $name: String!) {
-  editUser(email: $email, password: $password, name: $name){
+mutation Mutation($email: String, $password: String, $name: String, $notifications: Boolean, $notifications_alerts: Boolean) {
+  editUser(email: $email, password: $password, name: $name, notifications: $notifications, notifications_alerts: $notifications_alerts){
       id
       name
       email
@@ -61,9 +74,21 @@ mutation Mutation($email: String!, $password: String!, $name: String!) {
 }
 `
 
+export const EDIT_USER_PERMISSION = gql`
+mutation Mutation($id: ID!, $role: String, $confirmed_by_admin: Boolean) {
+  editUserPermission(id: $id, role: $role, confirmed_by_admin: $confirmed_by_admin)
+}
+`
+
 export const ADD_USER = gql`
-mutation Mutation($email: String!, $name: String!) {
-  addUser(email: $email, name: $name)
+mutation Mutation($email: String!) {
+  inviteUser(email: $email)
+}
+`
+
+export const REGISTER_INVITED_USER = gql`
+mutation Mutation($token: String!, $password: String!, $name: String!) {
+  invitationUserRegister(token: $token, password: $password, name: $name)
 }
 `
 
@@ -150,26 +175,54 @@ query Query {
 }
 `
 
-export const GET_PLANS = gql`
+export const GET_PLAN = gql`
 query Query ($id: ID){
-  profiles (id: $id){
-    id
-    name
-    schedule{
-        id
-        air_humidity
-        soil_humidity
-        air_temperature
-        light{
-            start_hour
-            end_hour
-            minimumLevel
+  profile(id: $id){
+       id
+        name
+        schedule{
+            id
+            air_humidity
+            soil_humidity
+            air_temperature
+            light{
+                start_hour
+                end_hour
+                minimumLevel
+            }
+            duration
         }
-        duration
+        started_at
+        created_at
+        updated_at
     }
-    started_at
-    created_at
-    updated_at
+}
+`
+
+export const GET_PLANS = gql`
+query Query ($offset: Int, $limit: Int){
+  profiles(offset: $offset, limit: $limit){
+    totalLength
+    hasMore
+    profiles{
+       id
+        name
+        schedule{
+            id
+            air_humidity
+            soil_humidity
+            air_temperature
+            light{
+                start_hour
+                end_hour
+                minimumLevel
+            }
+            duration
+        }
+        started_at
+        created_at
+        updated_at
+    }
   }
 }
 `
@@ -195,9 +248,9 @@ mutation Mutation ($name: String!, $schedule: [ScheduleInput!]!){
 }
 `
 
-export const ADD_MANUAL_PLAN = gql`
-mutation Mutation ($air_humidity: Int!, $soil_humidity: Int!, $air_temperature: Int!, $light: LightTimetableInput!){
-  addManualProfile (air_humidity: $air_humidity, soil_humidity: $soil_humidity, air_temperature: $air_temperature, light: $light){
+export const MANUAL_PLAN = gql`
+query Query{
+  manualProfile{
     air_humidity
     soil_humidity
     air_temperature
@@ -206,6 +259,27 @@ mutation Mutation ($air_humidity: Int!, $soil_humidity: Int!, $air_temperature: 
         end_hour
         minimumLevel
     }
+    fertilizer,
+    fertilizer_interval,
+    created_at
+    updated_at
+  }
+}
+`
+
+export const ADD_MANUAL_PLAN = gql`
+mutation Mutation ($air_humidity: Int, $soil_humidity: Int, $air_temperature: Int, $light: LightTimetableInput, $fertilizer: Int, $fertilizer_interval: Int){
+  addManualProfile (air_humidity: $air_humidity, soil_humidity: $soil_humidity, air_temperature: $air_temperature, light: $light, fertilizer: $fertilizer, fertilizer_interval: $fertilizer_interval){
+    air_humidity
+    soil_humidity
+    air_temperature
+    light {
+        start_hour
+        end_hour
+        minimumLevel
+    }
+    fertilizer,
+    fertilizer_interval,
     created_at
     updated_at
   }

@@ -1,6 +1,6 @@
 import {Container, Spinner} from "react-bootstrap";
 import {useQuery} from "@apollo/client";
-import {HISTORY, SENSOR_READS} from "../helpers/gqlQueries";
+import {GET_SETTINGS, HISTORY, SENSOR_READS} from "../helpers/gqlQueries";
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -15,7 +15,7 @@ import {Line} from 'react-chartjs-2';
 import {customDatePicker, formatDateForDisplay, formatDateForFileName} from "../helpers/dataParse";
 import Banner from "../components/Banner";
 import {CSVLink, CSVDownload} from "react-csv";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 
 const Stats = () => {
     const [startDate, setStartDate] = useState(new Date(customDatePicker(1)).toISOString())
@@ -170,7 +170,7 @@ const Stats = () => {
                                      filename={"statystyki_" + formatDateForFileName(new Date()) + ".csv"}>
                                 Eksportuj dane w formacie .csv</CSVLink>
                             :
-                            <div className={'mt-2'}  style={{textAlign: 'center'}}>
+                            <div className={'mt-2'} style={{textAlign: 'center'}}>
                                 <Spinner animation="border" variant="primary" className={'spinner'}/>
                             </div>
                         }
@@ -178,10 +178,11 @@ const Stats = () => {
                 </div>
 
                 {loading &&
-                    <div className={'mt-3'} style={{textAlign: 'center'}}>
-                        <Spinner animation="border" variant="primary" className={'spinner'} style={{height: '6em', width: '6em'}}/>
-                        <p>Ładowanie</p>
-                    </div>
+                <div className={'mt-3'} style={{textAlign: 'center'}}>
+                    <Spinner animation="border" variant="primary" className={'spinner'}
+                             style={{height: '6em', width: '6em'}}/>
+                    <p>Ładowanie</p>
+                </div>
                 }
 
                 <div className={'row'}>
