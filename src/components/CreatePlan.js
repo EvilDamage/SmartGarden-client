@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {useMutation, useQuery} from "@apollo/client";
-import {DELETE_PLAN, GET_PLANS, GET_SETTINGS, UPDATE_SETTINGS} from "../helpers/gqlQueries";
+import {DELETE_PLAN, GET_PLANS, GET_SETTINGS, GET_USER, UPDATE_SETTINGS} from "../helpers/gqlQueries";
 import {Form as BootstrapForm} from "react-bootstrap";
 import {BsFillLightbulbFill, FaTemperatureHigh, GiPlantRoots, WiHumidity} from "react-icons/all";
 import {Pagination} from "react-pagination-bar"
@@ -23,6 +23,7 @@ const CreatePlan = ({reload}) => {
         refetch: settingsRefeatch
     } = useQuery(GET_SETTINGS);
     const [updateSettings, {loading: loadingUpdateSettings, error: ErrorUpdateSettings}] = useMutation(UPDATE_SETTINGS);
+    const {data: userData} = useQuery(GET_USER)
 
     useEffect(() => {
         if (data) {
@@ -142,6 +143,7 @@ const CreatePlan = ({reload}) => {
                             style={{position: 'absolute', zIndex: 100, marginLeft: 15}}
                             type="radio"
                             checked={settings && settings.settings.current_plan === plan.id}
+                            disabled={userData && userData.me.role !== 'ADMIN'}
                             onChange={() => {
                                 updateSettings({
                                     variables: {
@@ -196,7 +198,7 @@ const CreatePlan = ({reload}) => {
                                 }
                             </ul>
                             <div className={'button-wrapper mt-3'}>
-                                <button type="button" className="btn btn-sm btn-danger"
+                                <button type="button" className="btn btn-sm btn-danger" disabled={userData && userData.me.role !== 'ADMIN'}
                                         onClick={() => deletePlan({variables: {id: plan.id}}).then(() => {
                                             refetch();
                                         })}>Usuń

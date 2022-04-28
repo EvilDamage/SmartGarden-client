@@ -115,6 +115,7 @@ const Settings = () => {
                                     />
                                 </div>
                                 <button type="button" className="btn btn-primary mt-3"
+                                        disabled={userData && userData.me.role !== 'ADMIN'}
                                         onClick={() => {
                                             updateSettings({
                                                 variables: {
@@ -139,35 +140,43 @@ const Settings = () => {
                     </div>
                     <div className={'col-lg-6'}>
                         <h4>Zaproś nowego użytkownika</h4>
-                        <Formik
-                            initialValues={{
-                                email: '',
-                            }}
-                            validationSchema={validateEmail}
-                            onSubmit={(values, {resetForm}) => {
-                                addUser({
-                                    variables: {
-                                        email: values.email
-                                    }
-                                }).then(() => {
-                                    resetForm()
-                                })
-                            }}
-                        >
-                            <Form>
-                                <label className="form-label">Adres Email</label>
-                                <Field id={"email"} name={"email"} type="text"
-                                       className="form-control mb-1" placeholder="Email"
-                                />
-                                <ErrorMessage name="email" render={msg => <div className={'form-error'}>{msg}</div>}/>
-                                <button type="submit" className="btn btn-primary mt-3" disabled={loadingAddUser}>
-                                    {!loadingAddUser ? 'Zaproś' :
-                                        <div className="spinner-border spinner-border-sm" role="status">
-                                            <span className="visually-hidden">Loading...</span>
-                                        </div>}
-                                </button>
-                            </Form>
-                        </Formik>
+                        {
+                            userData && userData.me.role !== 'ADMIN' &&
+                            <span>Towoje rola nie pozwala na wyświetlenie tych informacji</span>
+                        }
+                        {
+                            userData && userData.me.role === 'ADMIN' &&
+                            <Formik
+                                initialValues={{
+                                    email: '',
+                                }}
+                                validationSchema={validateEmail}
+                                onSubmit={(values, {resetForm}) => {
+                                    addUser({
+                                        variables: {
+                                            email: values.email
+                                        }
+                                    }).then(() => {
+                                        resetForm()
+                                    })
+                                }}
+                            >
+                                <Form>
+                                    <label className="form-label">Adres Email</label>
+                                    <Field id={"email"} name={"email"} type="text"
+                                           className="form-control mb-1" placeholder="Email"
+                                    />
+                                    <ErrorMessage name="email"
+                                                  render={msg => <div className={'form-error'}>{msg}</div>}/>
+                                    <button type="submit" className="btn btn-primary mt-3" disabled={loadingAddUser}>
+                                        {!loadingAddUser ? 'Zaproś' :
+                                            <div className="spinner-border spinner-border-sm" role="status">
+                                                <span className="visually-hidden">Loading...</span>
+                                            </div>}
+                                    </button>
+                                </Form>
+                            </Formik>
+                        }
                         <h4 className={'mt-3'}>Lista użytkowników</h4>
                         <ul className="list-group">
                             {
@@ -249,6 +258,10 @@ const Settings = () => {
                                         </li>
                                     )
                                 })
+                            }
+                            {
+                                userData && userData.me.role !== 'ADMIN' &&
+                                <span>Towoje rola nie pozwala na wyświetlenie tych informacji</span>
                             }
                         </ul>
                     </div>

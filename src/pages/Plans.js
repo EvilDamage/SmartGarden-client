@@ -5,7 +5,7 @@ import {
     ADD_PLANS,
     DELETE_PLAN,
     GET_PLANS,
-    GET_SETTINGS, HISTORY, MANUAL_PLAN,
+    GET_SETTINGS, GET_USER, HISTORY, MANUAL_PLAN,
     UPDATE_SETTINGS
 } from "../helpers/gqlQueries";
 import React, {useEffect, useState} from "react";
@@ -26,6 +26,7 @@ const Plans = () => {
     const [reload, setReload] = useState(false)
 
     const [updatePlan, {loading: loadingUpdatePlan, error: ErrorUpdatePlan}] = useMutation(ADD_PLANS);
+    const {data: userData} = useQuery(GET_USER)
 
     const addEmptyPlanItem = (e, field, values, setValues) => {
         const schedule = [...values.schedule];
@@ -61,7 +62,7 @@ const Plans = () => {
                     .max(100, "Maksymalna wartość to 100")
                     .typeError('Wartość musi być liczbą')
                     .required("Pole jest wymagane"),
-                air_humidity:Yup.number()
+                air_humidity: Yup.number()
                     .min(1, "Minimalna wartość to 0")
                     .max(100, "Maksymalna wartość to 100")
                     .typeError('Wartość musi być liczbą')
@@ -96,10 +97,11 @@ const Plans = () => {
                             <span>
                             <h4 style={{display: 'inline-block'}}>Zapisane plany</h4>
                             </span>
-                    <button type="button" className="btn btn-sm btn-primary" style={{width: "12em"}} onClick={() => {
-                        setModalVisibility(true)
-                    }}>Stwórz plan
-                    </button>
+                        <button type="button" className="btn btn-sm btn-primary" style={{width: "12em"}} disabled={ userData && userData.me.role !== 'ADMIN'}
+                                onClick={() => {
+                                    setModalVisibility(true)
+                                }}>Stwórz plan
+                        </button>
                 </div>
                 <div className="accordion accordion-flush">
                     <CreatePlan reload={reload}/>

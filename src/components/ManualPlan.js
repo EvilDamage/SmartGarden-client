@@ -3,7 +3,7 @@ import * as Yup from "yup";
 import TimePicker from "./TimePicker";
 import React from "react";
 import {useMutation, useQuery} from "@apollo/client";
-import {ADD_MANUAL_PLAN, MANUAL_PLAN} from "../helpers/gqlQueries";
+import {ADD_MANUAL_PLAN, GET_USER, MANUAL_PLAN} from "../helpers/gqlQueries";
 
 const ManualPlan = () => {
     const {data: manualPlanData, loading: loadingManualPlan, error: ErrorManualPlan} = useQuery(MANUAL_PLAN);
@@ -11,6 +11,7 @@ const ManualPlan = () => {
         loading: loadingUpdateManualPlan,
         error: ErrorUpdateManualPlan
     }] = useMutation(ADD_MANUAL_PLAN);
+    const {data: userData} = useQuery(GET_USER)
 
 
     const validate = Yup.object().shape({
@@ -73,24 +74,28 @@ const ManualPlan = () => {
                 <Form>
                     <div className={'row'}>
                         <div className={'col-md-4 col-lg-4 col-xl-2 mb-1'}>
+                            <label>Temperatura powietrza</label>
                             <Field id={"air_temperature"} name={"air_temperature"} type="number"
                                    className="form-control" placeholder="Temperatura" min={0} max={100}
                             />
                             <ErrorMessage name="air_temperature" render={msg => <div className={'form-error'}>{msg}</div>} />
                         </div>
                         <div className={'col-md-4 col-lg-4 col-xl-2  mb-1'}>
+                            <label>Wilgotność powietrza</label>
                             <Field id={"air_humidity"} name={"air_humidity"} type="number"
                                    className="form-control" placeholder="Wilgotność" min={0} max={100}
                             />
                             <ErrorMessage name="air_humidity" render={msg => <div className={'form-error'}>{msg}</div>} />
                         </div>
                         <div className={'col-md-4 col-lg-4 col-xl-2  mb-1'}>
+                            <label>Wilgotność gleby</label>
                             <Field id={"soil_humidity"} name={"soil_humidity"} type="number"
                                    className="form-control" placeholder="Wilgotność gleby" min={0} max={100}
                             />
                             <ErrorMessage name="soil_humidity" render={msg => <div className={'form-error'}>{msg}</div>} />
                         </div>
                         <div className={'col-md-4 col-lg-4 col-xl-2  mb-1'}>
+                            <label>Godziny doświetlania</label>
                             <Field name={'light'}>
                                 {({field, form, meta}) => {
                                     const setupTimeCallback = (start, end) => {
@@ -105,13 +110,14 @@ const ManualPlan = () => {
                             </Field>
                         </div>
                         <div className={'col-md-4 col-lg-4 col-xl-2  mb-1'}>
+                            <label>Min. poziom oświetlenia</label>
                             <Field id={"light.minimumLevel"} name={"light.minimumLevel"} type="number"
                                    className="form-control" placeholder="Poziom oświetlenia" min={0} max={100}
                             />
                             <ErrorMessage name="light.minimumLevel" render={msg => <div className={'form-error'}>{msg}</div>} />
                         </div>
-                        <div className={'col-md-4 col-lg-4 col-xl-2  mb-1'}>
-                            <button type="submit" className="btn btn-primary" disabled={loadingUpdateManualPlan}>
+                        <div className={'col-md-4 col-lg-4 col-xl-2 mb-1 mt-4'}>
+                            <button type="submit" className="btn btn-primary" disabled={loadingUpdateManualPlan  || (userData && userData.me.role !== 'ADMIN')}>
                                 {!loadingUpdateManualPlan ? 'Zapisz' :
                                     <div className="spinner-border spinner-border-sm" role="status">
                                         <span className="visually-hidden">Loading...</span>
