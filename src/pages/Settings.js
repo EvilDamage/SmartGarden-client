@@ -76,7 +76,7 @@ const Settings = () => {
                                 <BootstrapForm.Select value={mode} onChange={(e) => setMode(e.target.value)}>
                                     <option value="manual">Manual</option>
                                     <option value="plan">Plan</option>
-                                    <option value="off">Off</option>
+                                    <option value="off">Tylko odczyt</option>
                                 </BootstrapForm.Select>
                                 <label className="form-label mt-3">Interwał odczytów (min)</label>
                                 <BootstrapForm.Select value={interval}
