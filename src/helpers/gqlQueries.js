@@ -267,6 +267,18 @@ query Query{
 }
 `
 
+export const MANUAL_CONTROL = gql`
+    mutation Mutation($pump: Int, $pump_fertilizer: Int, $fan: Int, $light: Boolean){
+        manualControl(pump: $pump, pump_fertilizer: $pump_fertilizer, fan: $fan, light: $light)
+    }
+`
+
+export const EMERGENCY_STOP = gql`
+    mutation Mutation($stop: Boolean){
+        emergencyStop(stop: $stop)
+    }
+`
+
 export const ADD_MANUAL_PLAN = gql`
 mutation Mutation ($air_humidity: Int, $soil_humidity: Int, $air_temperature: Int, $light: LightTimetableInput, $fertilizer: Int, $fertilizer_interval: Int){
   addManualProfile (air_humidity: $air_humidity, soil_humidity: $soil_humidity, air_temperature: $air_temperature, light: $light, fertilizer: $fertilizer, fertilizer_interval: $fertilizer_interval){

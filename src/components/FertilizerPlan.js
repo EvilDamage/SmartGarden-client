@@ -1,8 +1,10 @@
 import {Formik, Field, Form, ErrorMessage} from 'formik';
 import * as Yup from "yup";
-import React from "react";
+import React, {useState} from "react";
 import {useMutation, useQuery} from "@apollo/client";
 import {ADD_MANUAL_PLAN, GET_USER, MANUAL_PLAN} from "../helpers/gqlQueries";
+import {Toast, ToastContainer} from "react-bootstrap";
+import {FaLeaf} from "react-icons/all";
 
 const FertilizerPlan = () => {
     const {data: manualPlanData, loading: loadingManualPlan, error: ErrorManualPlan} = useQuery(MANUAL_PLAN);
@@ -11,6 +13,9 @@ const FertilizerPlan = () => {
         error: ErrorUpdateManualPlan
     }] = useMutation(ADD_MANUAL_PLAN);
     const {data: userData} = useQuery(GET_USER)
+
+    const [showToast, setShowToast] = useState(false);
+    const toggleShowToast = () => setShowToast(!showToast);
 
 
     const validate = Yup.object().shape({
@@ -44,6 +49,11 @@ const FertilizerPlan = () => {
                             fertilizer: values.fertilizer,
                             fertilizer_interval: values.fertilizer_interval
                         }
+                    }).then(()=>{
+                        setShowToast(true)
+                        setTimeout(()=>{
+                            setShowToast(false)
+                        }, 3000)
                     })
                 }}
             >
@@ -76,6 +86,16 @@ const FertilizerPlan = () => {
                 </Form>
             </Formik>
             }
+            <ToastContainer className="p-3" position={'bottom-end'}>
+                <Toast show={showToast} onClose={toggleShowToast}>
+                    <Toast.Header>
+                        <FaLeaf style={{color: '#064635', fontSize: '16px', marginRight: '5px'}}/>
+                        <strong className="me-auto">Smart Garden</strong>
+                        <small>3sec temu </small>
+                    </Toast.Header>
+                    <Toast.Body>Dane zostały zapisane!</Toast.Body>
+                </Toast>
+            </ToastContainer>
         </>
     )
 }

@@ -9,9 +9,9 @@ import {
     UPDATE_SETTINGS
 } from "../helpers/gqlQueries";
 import React, {useEffect, useState} from "react";
-import {BsFillLightbulbFill, FaTemperatureHigh, GiPlantRoots, WiHumidity} from "react-icons/all";
+import {BsFillLightbulbFill, FaLeaf, FaTemperatureHigh, GiPlantRoots, WiHumidity} from "react-icons/all";
 import {formatDateForDisplay} from "../helpers/dataParse";
-import {Form as BootstrapForm, Modal, Spinner} from "react-bootstrap";
+import {Form as BootstrapForm, Modal, Spinner, Toast, ToastContainer} from "react-bootstrap";
 import TimePicker from "../components/TimePicker";
 import History from "../components/History";
 import ManualPlan from "../components/ManualPlan";
@@ -24,6 +24,9 @@ import FertilizerPlan from "../components/FertilizerPlan";
 const Plans = () => {
     const [modalVisibility, setModalVisibility] = useState(false)
     const [reload, setReload] = useState(false)
+
+    const [showToast, setShowToast] = useState(false);
+    const toggleShowToast = () => setShowToast(!showToast);
 
     const [updatePlan, {loading: loadingUpdatePlan, error: ErrorUpdatePlan}] = useMutation(ADD_PLANS);
     const {data: userData} = useQuery(GET_USER)
@@ -145,6 +148,10 @@ const Plans = () => {
                             }).then(() => {
                                 setReload(!reload)
                                 setModalVisibility(false)
+                                setShowToast(true)
+                                setTimeout(()=>{
+                                    setShowToast(false)
+                                }, 3000)
                             })
                         }}
                     >
@@ -252,6 +259,16 @@ const Plans = () => {
                     </Formik>
                 </Modal.Body>
             </Modal>
+            <ToastContainer className="p-3" position={'bottom-end'}>
+                <Toast show={showToast} onClose={toggleShowToast}>
+                    <Toast.Header>
+                        <FaLeaf style={{color: '#064635', fontSize: '16px', marginRight: '5px'}}/>
+                        <strong className="me-auto">Smart Garden</strong>
+                        <small>3sec temu </small>
+                    </Toast.Header>
+                    <Toast.Body>Nowy paln został utworzony!</Toast.Body>
+                </Toast>
+            </ToastContainer>
         </div>
     )
 }

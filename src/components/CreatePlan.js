@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from "react";
 import {useMutation, useQuery} from "@apollo/client";
 import {DELETE_PLAN, GET_PLANS, GET_SETTINGS, GET_USER, UPDATE_SETTINGS} from "../helpers/gqlQueries";
-import {Form as BootstrapForm} from "react-bootstrap";
-import {BsFillLightbulbFill, FaTemperatureHigh, GiPlantRoots, WiHumidity} from "react-icons/all";
+import {Form as BootstrapForm, Toast, ToastContainer} from "react-bootstrap";
+import {BsFillLightbulbFill, FaLeaf, FaTemperatureHigh, GiPlantRoots, WiHumidity} from "react-icons/all";
 import {Pagination} from "react-pagination-bar"
 
 const CreatePlan = ({reload}) => {
@@ -10,6 +10,9 @@ const CreatePlan = ({reload}) => {
     const [offset, setOffset] = useState(0)
     const [plansData, setPlansData] = useState(0)
     const [actualPage, setActualPage] = useState(1)
+
+    const [showToast, setShowToast] = useState(false);
+    const toggleShowToast = () => setShowToast(!showToast);
 
     const {data, loading, error, refetch} = useQuery(GET_PLANS, {
         variables: {limit: limit, offset: offset},
@@ -201,6 +204,10 @@ const CreatePlan = ({reload}) => {
                                 <button type="button" className="btn btn-sm btn-danger" disabled={userData && userData.me.role !== 'ADMIN'}
                                         onClick={() => deletePlan({variables: {id: plan.id}}).then(() => {
                                             refetch();
+                                            setShowToast(true)
+                                            setTimeout(()=>{
+                                                setShowToast(false)
+                                            }, 3000)
                                         })}>Usuń
                                 </button>
                             </div>
@@ -212,6 +219,16 @@ const CreatePlan = ({reload}) => {
             <div className={'mt-3'}>
                 {plansData && generatePagination(plansData.profiles.totalLength, offset, limit)}
             </div>
+            <ToastContainer className="p-3" position={'bottom-end'}>
+                <Toast show={showToast} onClose={toggleShowToast}>
+                    <Toast.Header>
+                        <FaLeaf style={{color: '#064635', fontSize: '16px', marginRight: '5px'}}/>
+                        <strong className="me-auto">Smart Garden</strong>
+                        <small>3sec temu </small>
+                    </Toast.Header>
+                    <Toast.Body>Plan został usunięty!</Toast.Body>
+                </Toast>
+            </ToastContainer>
         </>
     )
 }

@@ -1,4 +1,4 @@
-import {Button, Form as BootstrapForm, OverlayTrigger, Spinner, Tooltip} from "react-bootstrap";
+import {Button, Form as BootstrapForm, OverlayTrigger, Spinner, Toast, ToastContainer, Tooltip} from "react-bootstrap";
 import {useMutation, useQuery} from "@apollo/client";
 import {
     ADD_USER,
@@ -8,14 +8,14 @@ import {
     GET_USER,
     GET_USERS,
     UPDATE_SETTINGS,
-    EDIT_USER_PERMISSION
+    EDIT_USER_PERMISSION, MANUAL_CONTROL, EMERGENCY_STOP
 } from "../helpers/gqlQueries";
 import Banner from "../components/Banner";
 import React, {useEffect, useState} from "react";
 import {FiCheck, FiUserMinus} from "react-icons/fi";
 import {Formik, Field, Form, ErrorMessage} from 'formik';
 import * as Yup from "yup";
-import {MdBlock} from "react-icons/all";
+import {FaLeaf, MdBlock} from "react-icons/all";
 
 const Settings = () => {
     const [pump, setPump] = useState(false);
@@ -24,9 +24,15 @@ const Settings = () => {
     const [fan, setFan] = useState(false);
     const [mode, setMode] = useState(false);
     const [interval, setInterval] = useState(false);
+    const [showToast, setShowToast] = useState(false);
+    const toggleShowToast = () => setShowToast(!showToast);
+
+    const [showToastInvite, setShowToastInvite] = useState(false);
+    const toggleShowToastInvite = () => setShowToastInvite(!showToastInvite);
 
     const {data, loading, error} = useQuery(GET_SETTINGS);
     const [updateSettings, {loading: loadingUpdateSettings, error: ErrorUpdateSettings}] = useMutation(UPDATE_SETTINGS);
+    const [emergencyStop, {loading: loadingEmergencyStop, error: ErrorEmergencyStop}] = useMutation(EMERGENCY_STOP);
 
     const {data: usersList, refetch: usersRefeach} = useQuery(GET_USERS)
     const {data: userData} = useQuery(GET_USER)
@@ -37,6 +43,7 @@ const Settings = () => {
         error: errorEditUserPermission
     }] = useMutation(EDIT_USER_PERMISSION)
     const [deleteUser, {loading: LoadingDeleteUser, error: errorDeleteUser}] = useMutation(DELETE_USER)
+    const [manualControl, {loading: LoadingManualControl, error: errorManualControl}] = useMutation(MANUAL_CONTROL)
 
     useEffect(() => {
         if (data) {
@@ -53,6 +60,18 @@ const Settings = () => {
         email: Yup.string()
             .email('Niepoprawny adres email')
             .required("Pole jest wymagane"),
+    });
+
+    const validate = Yup.object().shape({
+        pump: Yup.number()
+            .min(0, "Minimalna wartość to 0")
+            .typeError('Wartość musi być liczbą'),
+        pump_fertilizer: Yup.number()
+            .min(0, "Minimalna wartość to 0")
+            .typeError('Wartość musi być liczbą'),
+        fan: Yup.number()
+            .min(0, "Minimalna wartość to 0")
+            .typeError('Wartość musi być liczbą')
     });
 
     return (
@@ -126,6 +145,11 @@ const Settings = () => {
                                                     light: light,
                                                     fan: fan
                                                 }
+                                            }).then(() => {
+                                                setShowToast(true)
+                                                setTimeout(() => {
+                                                    setShowToast(false)
+                                                }, 3000)
                                             })
                                         }}>
                                     {!loadingUpdateSettings ? 'Zapisz' :
@@ -137,6 +161,66 @@ const Settings = () => {
                             </BootstrapForm>
                         </>
                         }
+                        <div className={'mt-3'}>
+                            <h4>Manualne sterowanie</h4>
+                            <Formik
+                                initialValues={{
+                                    pump: 0,
+                                    pumpFertilizer: 0,
+                                    fan: 0
+                                }}
+                                validationSchema={validate}
+                                onSubmit={(values,{resetForm}) => {
+                                    manualControl({
+                                        variables: {
+                                            pump: values.pump,
+                                            pump_fertilizer: values.pumpFertilizer,
+                                            fan: values.fan
+                                        }
+                                    }).then(()=>{
+                                        resetForm({})
+                                    })
+                                }}>
+                                <Form>
+                                    <div>
+                                        <label>Uruchom pompe (ml)</label>
+                                        <Field id={"pump"} name={"pump"} type="number"
+                                               className="form-control" placeholder="Pompa wody"
+                                        />
+                                        <ErrorMessage name="air_temperature"
+                                                      render={msg => <div className={'form-error'}>{msg}</div>}/>
+                                    </div>
+                                    <div>
+                                        <label>Uruchom pompe nawozu (ml)</label>
+                                        <Field id={"pumpFertilizer"} name={"pumpFertilizer"} type="number"
+                                               className="form-control" placeholder="Pompa nawozu"
+                                        />
+                                        <ErrorMessage name="air_temperature"
+                                                      render={msg => <div className={'form-error'}>{msg}</div>}/>
+                                    </div>
+                                    <div>
+                                        <label>Uruchom wentylację (sec)</label>
+                                        <Field id={"fan"} name={"fan"} type="number"
+                                               className="form-control" placeholder="Wentylacja"
+                                        />
+                                        <ErrorMessage name="air_temperature"
+                                                      render={msg => <div className={'form-error'}>{msg}</div>}/>
+                                    </div>
+                                    <button type="submit" className="btn btn-primary mt-3">
+                                        Wykonaj
+                                    </button>
+                                    <button type={'button'}  className="btn btn-danger mt-3" onClick={() => {
+                                        emergencyStop({
+                                            variables: {
+                                                stop: true
+                                            }
+                                        })
+                                    }}>
+                                        STOP!
+                                    </button>
+                                </Form>
+                            </Formik>
+                        </div>
                     </div>
                     <div className={'col-lg-6'}>
                         <h4>Zaproś nowego użytkownika</h4>
@@ -158,6 +242,10 @@ const Settings = () => {
                                         }
                                     }).then(() => {
                                         resetForm()
+                                        setShowToastInvite(true)
+                                        setTimeout(() => {
+                                            setShowToastInvite(false)
+                                        }, 3000)
                                     })
                                 }}
                             >
@@ -198,6 +286,11 @@ const Settings = () => {
                                                                                       id: user.id,
                                                                                       role: e.target.value
                                                                                   }
+                                                                              }).then(() => {
+                                                                                  setShowToast(true)
+                                                                                  setTimeout(() => {
+                                                                                      setShowToast(false)
+                                                                                  }, 3000)
                                                                               })
                                                                           }}>
                                                         <option value="ADMIN">Admin</option>
@@ -215,6 +308,10 @@ const Settings = () => {
                                                                             }
                                                                         }).then(() => {
                                                                             usersRefeach()
+                                                                            setShowToast(true)
+                                                                            setTimeout(() => {
+                                                                                setShowToast(false)
+                                                                            }, 3000)
                                                                         })
                                                                     }}>
                                                                 <FiCheck/>
@@ -232,6 +329,10 @@ const Settings = () => {
                                                                             }
                                                                         }).then(() => {
                                                                             usersRefeach()
+                                                                            setShowToast(true)
+                                                                            setTimeout(() => {
+                                                                                setShowToast(false)
+                                                                            }, 3000)
                                                                         })
                                                                     }}>
                                                                 <MdBlock/>
@@ -248,6 +349,10 @@ const Settings = () => {
                                                                         }
                                                                     }).then(() => {
                                                                         usersRefeach()
+                                                                        setShowToast(true)
+                                                                        setTimeout(() => {
+                                                                            setShowToast(false)
+                                                                        }, 3000)
                                                                     })
                                                                 }}>
                                                             <FiUserMinus/>
@@ -267,6 +372,24 @@ const Settings = () => {
                     </div>
                 </div>
             </div>
+            <ToastContainer className="p-3" position={'bottom-end'}>
+                <Toast show={showToast} onClose={toggleShowToast}>
+                    <Toast.Header>
+                        <FaLeaf style={{color: '#064635', fontSize: '16px', marginRight: '5px'}}/>
+                        <strong className="me-auto">Smart Garden</strong>
+                        <small>3sec temu </small>
+                    </Toast.Header>
+                    <Toast.Body>Dane zostały zapisane!</Toast.Body>
+                </Toast>
+                <Toast show={showToastInvite} onClose={toggleShowToastInvite}>
+                    <Toast.Header>
+                        <FaLeaf style={{color: '#064635', fontSize: '16px', marginRight: '5px'}}/>
+                        <strong className="me-auto">Smart Garden</strong>
+                        <small>3sec temu </small>
+                    </Toast.Header>
+                    <Toast.Body>Użytkownik został zaproszony!</Toast.Body>
+                </Toast>
+            </ToastContainer>
         </div>
     )
 }

@@ -1,9 +1,11 @@
 import {Formik, Field, Form, ErrorMessage} from 'formik';
 import * as Yup from "yup";
 import TimePicker from "./TimePicker";
-import React from "react";
+import React, {useState} from "react";
 import {useMutation, useQuery} from "@apollo/client";
 import {ADD_MANUAL_PLAN, GET_USER, MANUAL_PLAN} from "../helpers/gqlQueries";
+import {Toast, ToastContainer} from "react-bootstrap";
+import {FaLeaf} from "react-icons/all";
 
 const ManualPlan = () => {
     const {data: manualPlanData, loading: loadingManualPlan, error: ErrorManualPlan} = useQuery(MANUAL_PLAN);
@@ -12,6 +14,9 @@ const ManualPlan = () => {
         error: ErrorUpdateManualPlan
     }] = useMutation(ADD_MANUAL_PLAN);
     const {data: userData} = useQuery(GET_USER)
+
+    const [showToast, setShowToast] = useState(false);
+    const toggleShowToast = () => setShowToast(!showToast);
 
 
     const validate = Yup.object().shape({
@@ -68,6 +73,11 @@ const ManualPlan = () => {
                             air_temperature: values.air_temperature,
                             light: values.light
                         }
+                    }).then(()=>{
+                        setShowToast(true)
+                        setTimeout(()=>{
+                            setShowToast(false)
+                        }, 3000)
                     })
                 }}
             >
@@ -128,7 +138,16 @@ const ManualPlan = () => {
                 </Form>
             </Formik>
             }
-
+            <ToastContainer className="p-3" position={'bottom-end'}>
+                <Toast show={showToast} onClose={toggleShowToast}>
+                    <Toast.Header>
+                        <FaLeaf style={{color: '#064635', fontSize: '16px', marginRight: '5px'}}/>
+                        <strong className="me-auto">Smart Garden</strong>
+                        <small>3sec temu </small>
+                    </Toast.Header>
+                    <Toast.Body>Dane zostały zapisane!</Toast.Body>
+                </Toast>
+            </ToastContainer>
         </>
     )
 }
