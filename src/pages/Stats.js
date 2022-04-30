@@ -16,6 +16,7 @@ import {customDatePicker, formatDateForDisplay, formatDateForFileName} from "../
 import Banner from "../components/Banner";
 import {CSVLink, CSVDownload} from "react-csv";
 import React, {useEffect, useState} from "react";
+import {IoMdRefresh} from "react-icons/all";
 
 const Stats = () => {
     const [startDate, setStartDate] = useState(new Date(customDatePicker(1)).toISOString())
@@ -164,7 +165,7 @@ const Stats = () => {
                         }}>14 dni
                         </button>
                     </div>
-                    <div className={'col-lg-6'}>
+                    <div className={'col-lg-5 mb-1'}>
                         {data ?
                             <CSVLink data={data.sensorReads} className="btn btn-primary"
                                      filename={"statystyki_" + formatDateForFileName(new Date()) + ".csv"}>
@@ -174,6 +175,12 @@ const Stats = () => {
                                 <Spinner animation="border" variant="primary" className={'spinner'}/>
                             </div>
                         }
+                    </div>
+                    <div className={'col-lg-1'}>
+                        <button type="button" className="btn btn-primary" style={{marginRight: '1em'}} onClick={() => {
+                            refetch()
+                        }}><IoMdRefresh/>
+                        </button>
                     </div>
                 </div>
 
