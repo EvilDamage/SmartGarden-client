@@ -4,7 +4,7 @@ import TimePicker from "./TimePicker";
 import React, {useState} from "react";
 import {useMutation, useQuery} from "@apollo/client";
 import {ADD_MANUAL_PLAN, GET_USER, MANUAL_PLAN} from "../helpers/gqlQueries";
-import {Toast, ToastContainer} from "react-bootstrap";
+import {Spinner, Toast, ToastContainer} from "react-bootstrap";
 import {FaLeaf} from "react-icons/all";
 
 const ManualPlan = () => {
@@ -52,6 +52,11 @@ const ManualPlan = () => {
                         <h4 style={{display: 'inline-block'}}>Dane manualne</h4>
                     </span>
             </div>
+            { !manualPlanData &&
+                <div className={'mt-2'} style={{textAlign: 'center'}}>
+                    <Spinner animation="border" variant="primary" className={'spinner'}/>
+                </div>
+            }
             {manualPlanData &&
             <Formik
                 initialValues={{

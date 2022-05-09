@@ -266,6 +266,11 @@ const Settings = () => {
                             </Formik>
                         }
                         <h4 className={'mt-3'}>Lista użytkowników</h4>
+                        { !userData &&
+                        <div className={'mt-2'} style={{textAlign: 'center'}}>
+                            <Spinner animation="border" variant="primary" className={'spinner'}/>
+                        </div>
+                        }
                         <ul className="list-group">
                             {
                                 userData && userData.me.role === 'ADMIN' && usersList && usersList.users.map((user) => {

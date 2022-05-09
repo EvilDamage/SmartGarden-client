@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {useMutation, useQuery} from "@apollo/client";
 import {DELETE_PLAN, GET_PLANS, GET_SETTINGS, GET_USER, UPDATE_SETTINGS} from "../helpers/gqlQueries";
-import {Form as BootstrapForm, Toast, ToastContainer} from "react-bootstrap";
+import {Form as BootstrapForm, Spinner, Toast, ToastContainer} from "react-bootstrap";
 import {BsFillLightbulbFill, FaLeaf, FaTemperatureHigh, GiPlantRoots, WiHumidity} from "react-icons/all";
 import {Pagination} from "react-pagination-bar"
 
@@ -139,6 +139,11 @@ const CreatePlan = ({reload}) => {
 
     return (
         <>
+            { !plansData &&
+            <div className={'mt-2'} style={{textAlign: 'center'}}>
+                <Spinner animation="border" variant="primary" className={'spinner'}/>
+            </div>
+            }
             {plansData && plansData.profiles.profiles.map((plan, index) => {
                 return (<div key={index} className="accordion-item">
                     <h2 className="accordion-header" id="flush-headingOne">
