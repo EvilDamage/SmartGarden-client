@@ -15,6 +15,15 @@ mutation Mutation($email: String!, $password: String!) {
 }
 `
 
+export const REFRESH_TOKEN = gql`
+mutation Mutation($refresh_token: String!) {
+  refreshToken(refresh_token: $refresh_token) {
+    access_token
+    refresh_token
+  }
+}
+`
+
 export const CONFIRM_EMAIL = gql`
 mutation Mutation($token: String!) {
   confirmEmail(token: $token)
@@ -265,6 +274,18 @@ query Query{
     updated_at
   }
 }
+`
+
+export const MANUAL_CONTROL = gql`
+    mutation Mutation($pump: Int, $pump_fertilizer: Int, $fan: Int, $light: Boolean){
+        manualControl(pump: $pump, pump_fertilizer: $pump_fertilizer, fan: $fan, light: $light)
+    }
+`
+
+export const EMERGENCY_STOP = gql`
+    mutation Mutation($stop: Boolean){
+        emergencyStop(stop: $stop)
+    }
 `
 
 export const ADD_MANUAL_PLAN = gql`

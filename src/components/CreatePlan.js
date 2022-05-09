@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from "react";
 import {useMutation, useQuery} from "@apollo/client";
-import {DELETE_PLAN, GET_PLANS, GET_SETTINGS, UPDATE_SETTINGS} from "../helpers/gqlQueries";
-import {Form as BootstrapForm} from "react-bootstrap";
-import {BsFillLightbulbFill, FaTemperatureHigh, GiPlantRoots, WiHumidity} from "react-icons/all";
+import {DELETE_PLAN, GET_PLANS, GET_SETTINGS, GET_USER, UPDATE_SETTINGS} from "../helpers/gqlQueries";
+import {Form as BootstrapForm, Spinner, Toast, ToastContainer} from "react-bootstrap";
+import {BsFillLightbulbFill, FaLeaf, FaTemperatureHigh, GiPlantRoots, WiHumidity} from "react-icons/all";
 import {Pagination} from "react-pagination-bar"
 
 const CreatePlan = ({reload}) => {
@@ -10,6 +10,9 @@ const CreatePlan = ({reload}) => {
     const [offset, setOffset] = useState(0)
     const [plansData, setPlansData] = useState(0)
     const [actualPage, setActualPage] = useState(1)
+
+    const [showToast, setShowToast] = useState(false);
+    const toggleShowToast = () => setShowToast(!showToast);
 
     const {data, loading, error, refetch} = useQuery(GET_PLANS, {
         variables: {limit: limit, offset: offset},
@@ -23,6 +26,7 @@ const CreatePlan = ({reload}) => {
         refetch: settingsRefeatch
     } = useQuery(GET_SETTINGS);
     const [updateSettings, {loading: loadingUpdateSettings, error: ErrorUpdateSettings}] = useMutation(UPDATE_SETTINGS);
+    const {data: userData} = useQuery(GET_USER)
 
     useEffect(() => {
         if (data) {
@@ -135,6 +139,11 @@ const CreatePlan = ({reload}) => {
 
     return (
         <>
+            { !plansData &&
+            <div className={'mt-2'} style={{textAlign: 'center'}}>
+                <Spinner animation="border" variant="primary" className={'spinner'}/>
+            </div>
+            }
             {plansData && plansData.profiles.profiles.map((plan, index) => {
                 return (<div key={index} className="accordion-item">
                     <h2 className="accordion-header" id="flush-headingOne">
@@ -142,6 +151,7 @@ const CreatePlan = ({reload}) => {
                             style={{position: 'absolute', zIndex: 100, marginLeft: 15}}
                             type="radio"
                             checked={settings && settings.settings.current_plan === plan.id}
+                            disabled={userData && userData.me.role !== 'ADMIN'}
                             onChange={() => {
                                 updateSettings({
                                     variables: {
@@ -196,9 +206,14 @@ const CreatePlan = ({reload}) => {
                                 }
                             </ul>
                             <div className={'button-wrapper mt-3'}>
-                                <button type="button" className="btn btn-sm btn-danger"
+                                <button type="button" className="btn btn-sm btn-danger" disabled={userData && userData.me.role !== 'ADMIN'}
+                                        disabled={settings && settings.settings.current_plan === plan.id}
                                         onClick={() => deletePlan({variables: {id: plan.id}}).then(() => {
                                             refetch();
+                                            setShowToast(true)
+                                            setTimeout(()=>{
+                                                setShowToast(false)
+                                            }, 3000)
                                         })}>Usuń
                                 </button>
                             </div>
@@ -210,6 +225,16 @@ const CreatePlan = ({reload}) => {
             <div className={'mt-3'}>
                 {plansData && generatePagination(plansData.profiles.totalLength, offset, limit)}
             </div>
+            <ToastContainer className="p-3" position={'bottom-end'}>
+                <Toast show={showToast} onClose={toggleShowToast}>
+                    <Toast.Header>
+                        <FaLeaf style={{color: '#064635', fontSize: '16px', marginRight: '5px'}}/>
+                        <strong className="me-auto">Smart Garden</strong>
+                        <small>3sec temu </small>
+                    </Toast.Header>
+                    <Toast.Body>Plan został usunięty!</Toast.Body>
+                </Toast>
+            </ToastContainer>
         </>
     )
 }

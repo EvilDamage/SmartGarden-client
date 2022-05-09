@@ -5,13 +5,13 @@ import {
     ADD_PLANS,
     DELETE_PLAN,
     GET_PLANS,
-    GET_SETTINGS, HISTORY, MANUAL_PLAN,
+    GET_SETTINGS, GET_USER, HISTORY, MANUAL_PLAN,
     UPDATE_SETTINGS
 } from "../helpers/gqlQueries";
 import React, {useEffect, useState} from "react";
-import {BsFillLightbulbFill, FaTemperatureHigh, GiPlantRoots, WiHumidity} from "react-icons/all";
+import {BsFillLightbulbFill, FaLeaf, FaTemperatureHigh, GiPlantRoots, WiHumidity} from "react-icons/all";
 import {formatDateForDisplay} from "../helpers/dataParse";
-import {Form as BootstrapForm, Modal, Spinner} from "react-bootstrap";
+import {Form as BootstrapForm, Modal, Spinner, Toast, ToastContainer} from "react-bootstrap";
 import TimePicker from "../components/TimePicker";
 import History from "../components/History";
 import ManualPlan from "../components/ManualPlan";
@@ -25,7 +25,11 @@ const Plans = () => {
     const [modalVisibility, setModalVisibility] = useState(false)
     const [reload, setReload] = useState(false)
 
+    const [showToast, setShowToast] = useState(false);
+    const toggleShowToast = () => setShowToast(!showToast);
+
     const [updatePlan, {loading: loadingUpdatePlan, error: ErrorUpdatePlan}] = useMutation(ADD_PLANS);
+    const {data: userData} = useQuery(GET_USER)
 
     const addEmptyPlanItem = (e, field, values, setValues) => {
         const schedule = [...values.schedule];
@@ -61,7 +65,7 @@ const Plans = () => {
                     .max(100, "Maksymalna wartość to 100")
                     .typeError('Wartość musi być liczbą')
                     .required("Pole jest wymagane"),
-                air_humidity:Yup.number()
+                air_humidity: Yup.number()
                     .min(1, "Minimalna wartość to 0")
                     .max(100, "Maksymalna wartość to 100")
                     .typeError('Wartość musi być liczbą')
@@ -96,10 +100,11 @@ const Plans = () => {
                             <span>
                             <h4 style={{display: 'inline-block'}}>Zapisane plany</h4>
                             </span>
-                    <button type="button" className="btn btn-sm btn-primary" style={{width: "12em"}} onClick={() => {
-                        setModalVisibility(true)
-                    }}>Stwórz plan
-                    </button>
+                        <button type="button" className="btn btn-sm btn-primary" style={{width: "12em"}} disabled={ userData && userData.me.role !== 'ADMIN'}
+                                onClick={() => {
+                                    setModalVisibility(true)
+                                }}>Stwórz plan
+                        </button>
                 </div>
                 <div className="accordion accordion-flush">
                     <CreatePlan reload={reload}/>
@@ -143,6 +148,10 @@ const Plans = () => {
                             }).then(() => {
                                 setReload(!reload)
                                 setModalVisibility(false)
+                                setShowToast(true)
+                                setTimeout(()=>{
+                                    setShowToast(false)
+                                }, 3000)
                             })
                         }}
                     >
@@ -250,6 +259,16 @@ const Plans = () => {
                     </Formik>
                 </Modal.Body>
             </Modal>
+            <ToastContainer className="p-3" position={'bottom-end'}>
+                <Toast show={showToast} onClose={toggleShowToast}>
+                    <Toast.Header>
+                        <FaLeaf style={{color: '#064635', fontSize: '16px', marginRight: '5px'}}/>
+                        <strong className="me-auto">Smart Garden</strong>
+                        <small>3sec temu </small>
+                    </Toast.Header>
+                    <Toast.Body>Nowy paln został utworzony!</Toast.Body>
+                </Toast>
+            </ToastContainer>
         </div>
     )
 }
