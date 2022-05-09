@@ -202,6 +202,7 @@ const CreatePlan = ({reload}) => {
                             </ul>
                             <div className={'button-wrapper mt-3'}>
                                 <button type="button" className="btn btn-sm btn-danger" disabled={userData && userData.me.role !== 'ADMIN'}
+                                        disabled={settings && settings.settings.current_plan === plan.id}
                                         onClick={() => deletePlan({variables: {id: plan.id}}).then(() => {
                                             refetch();
                                             setShowToast(true)

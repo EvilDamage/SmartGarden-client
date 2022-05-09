@@ -21,7 +21,7 @@ import Settings from "./pages/Settings";
 import User from "./pages/User";
 import Home from "./pages/Home";
 import Plans from "./pages/Plans";
-import {isAuthenticated} from "./helpers/config";
+import {apolloClient, isAuthenticated} from "./helpers/config";
 import ResetPassword from "./pages/ResetPassword";
 import EmailConfirmation from "./pages/EmailConfirmation";
 import UserInvitation from "./pages/UserInvitation";
@@ -69,27 +69,8 @@ function App() {
 }
 
 function ProvideAuth({children}) {
-    const link = createHttpLink({
-        uri: process.env.REACT_APP_API_URL,
-    });
-
-    const authLink = setContext((_, {headers}) => {
-        const token = localStorage.getItem('access_token');
-        return {
-            headers: {
-                ...headers,
-                Authorization: token ? `Bearer ${token}` : "",
-            }
-        }
-    });
-
-    const client = new ApolloClient({
-        link: authLink.concat(link),
-        cache: new InMemoryCache(),
-    });
-
     return (
-        <ApolloProvider client={client}>
+        <ApolloProvider client={apolloClient}>
             {children}
         </ApolloProvider>
     );

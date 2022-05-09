@@ -20,6 +20,7 @@ import {IoMdRefresh} from "react-icons/all";
 
 const Stats = () => {
     const [startDate, setStartDate] = useState(new Date(customDatePicker(1)).toISOString())
+    const [customInput, setCustomInput] = useState(1)
     const [endDate, setEndDate] = useState(new Date().toISOString())
 
     const {data, loading, error, refetch} = useQuery(SENSOR_READS, {
@@ -165,7 +166,20 @@ const Stats = () => {
                         }}>14 dni
                         </button>
                     </div>
-                    <div className={'col-lg-5 mb-1'}>
+                    <div className={'col-lg-3 col-md-5 mb-1'}>
+                        <div className={'d-flex justify-content-between'} style={{borderLeft: '1px solid grey', borderRight: '1px solid grey'}}>
+                            <input type="number" className="form-control w-50 d-inline" style={{marginRight: '1em', marginLeft: '1em'}}
+                                   min={1} value={customInput}
+                                   onChange={(e) => {
+                                       setCustomInput(e.target.value)
+                                   }}/>
+                            <button type="button" className="btn btn-primary w-50 d-inline" style={{marginRight: '1em'}} onClick={() => {
+                                setStartDate(new Date(customDatePicker(customInput)).toISOString())
+                            }}>Wybierz
+                            </button>
+                        </div>
+                    </div>
+                    <div className={'col-lg-3 mb-1'}>
                         {data ?
                             <CSVLink data={data.sensorReads} className="btn btn-primary"
                                      filename={"statystyki_" + formatDateForFileName(new Date()) + ".csv"}>
@@ -175,12 +189,6 @@ const Stats = () => {
                                 <Spinner animation="border" variant="primary" className={'spinner'}/>
                             </div>
                         }
-                    </div>
-                    <div className={'col-lg-1'}>
-                        <button type="button" className="btn btn-primary" style={{marginRight: '1em'}} onClick={() => {
-                            refetch()
-                        }}><IoMdRefresh/>
-                        </button>
                     </div>
                 </div>
 

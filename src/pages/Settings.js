@@ -22,7 +22,7 @@ const Settings = () => {
     const [pumpFertilizer, setPumpFertilizer] = useState(false);
     const [light, setLight] = useState(false);
     const [fan, setFan] = useState(false);
-    const [mode, setMode] = useState(false);
+    const [mode, setMode] = useState('off');
     const [interval, setInterval] = useState(false);
     const [showToast, setShowToast] = useState(false);
     const toggleShowToast = () => setShowToast(!showToast);

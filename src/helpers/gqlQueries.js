@@ -15,6 +15,15 @@ mutation Mutation($email: String!, $password: String!) {
 }
 `
 
+export const REFRESH_TOKEN = gql`
+mutation Mutation($refresh_token: String!) {
+  refreshToken(refresh_token: $refresh_token) {
+    access_token
+    refresh_token
+  }
+}
+`
+
 export const CONFIRM_EMAIL = gql`
 mutation Mutation($token: String!) {
   confirmEmail(token: $token)
