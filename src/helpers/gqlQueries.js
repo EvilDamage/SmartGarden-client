@@ -74,8 +74,8 @@ query Query {
 `
 
 export const EDIT_USER = gql`
-mutation Mutation($email: String, $password: String, $name: String, $notifications: Boolean, $notifications_alerts: Boolean) {
-  editUser(email: $email, password: $password, name: $name, notifications: $notifications, notifications_alerts: $notifications_alerts){
+mutation Mutation($email: String, $password: String, $oldPassword: String!, $name: String, $notifications: Boolean, $notifications_alerts: Boolean) {
+  editUser(email: $email, password: $password, oldPassword: $oldPassword, name: $name, notifications: $notifications, notifications_alerts: $notifications_alerts){
       id
       name
       email

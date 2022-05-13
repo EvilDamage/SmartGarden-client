@@ -24,7 +24,9 @@ const User = () => {
             .matches(/^(?=.*[A-Z])/, 'Hasło musi zawierać min. 1 duża literę')
             .matches(/^(?=.*[a-z])/, 'Hasło musi zawierać min. 1 małą literę')
             .matches(/^(?=.*\d)/, 'Hasło musi zawierać min. 1 liczbę.')
-            .matches(/^(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]/, 'Hasło musi zawierać min. 1 znak specjalny.')
+            .matches(/^(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]/, 'Hasło musi zawierać min. 1 znak specjalny.'),
+        oldPassword: Yup.string()
+            .required("Hasło jest wymagane")
     });
 
     return (
@@ -40,6 +42,7 @@ const User = () => {
                                     name: data.me.name || '',
                                     email: data.me.email || '',
                                     password: '',
+                                    oldPassword: '',
                                     notifications: data.me.notifications,
                                     notifications_alerts: data.me.notifications_alerts
                                 }}
@@ -50,6 +53,7 @@ const User = () => {
                                             name: values.name == '' ? undefined : values.name,
                                             email: values.email == '' ? undefined : values.email,
                                             password: values.password == '' ? undefined : values.password,
+                                            oldPassword: values.oldPassword,
                                             notifications: values.notifications,
                                             notifications_alerts: values.notifications_alerts,
                                         }
@@ -70,8 +74,13 @@ const User = () => {
                                     />
                                     <ErrorMessage name="email"
                                                   render={msg => <div className={'form-error'}>{msg}</div>}/>
-                                    <Field id={"password"} name={"password"} type="password"
+                                    <Field id={"oldPassword"} name={"oldPassword"} type="password"
                                            className="form-control mb-1" placeholder="Hasło"
+                                    />
+                                    <ErrorMessage name="oldPassword"
+                                                  render={msg => <div className={'form-error'}>{msg}</div>}/>
+                                    <Field id={"password"} name={"password"} type="password"
+                                           className="form-control mb-1" placeholder="Nowe Hasło"
                                     />
                                     <ErrorMessage name="password"
                                                   render={msg => <div className={'form-error'}>{msg}</div>}/>
